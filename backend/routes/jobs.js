@@ -7,10 +7,10 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const { category } = req.query;
-    const filter = category ? { category, isActive: true } : { isActive: true };
+    const filter = category ? { category } : {};
     
     const jobs = await Job.find(filter).sort({ createdAt: -1 });
-    res.json(jobs);
+    res.json({ data: jobs });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -32,24 +32,57 @@ router.get('/:id', async (req, res) => {
 // Create job (Admin only)
 router.post('/', auth, async (req, res) => {
   try {
-    const job = new Job(req.body);
+    const jobData = { ...req.body };
+    
+    // Validate required fields
+    if (!jobData.title || !jobData.organization || !jobData.category || 
+        !jobData.description || !jobData.lastDate || !jobData.applicationFee || 
+        !jobData.applyLink || !jobData.eligibility) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+    
+    // Clear job-specific fields for result and admit-card categories
+    if (jobData.category === 'result' || jobData.category === 'admit-card') {
+      delete jobData.startDate;
+      delete jobData.salary;
+      delete jobData.posts;
+    }
+    
+    const job = new Job(jobData);
     await job.save();
     res.status(201).json(job);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Job creation error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
 // Update job (Admin only)
 router.put('/:id', auth, async (req, res) => {
   try {
-    const job = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const jobData = { ...req.body };
+    
+    // Clear job-specific fields for result and admit-card categories
+    if (jobData.category === 'result' || jobData.category === 'admit-card') {
+      jobData.startDate = undefined;
+      jobData.salary = undefined;
+      jobData.posts = undefined;
+    }
+    
+    const job = await Job.findByIdAndUpdate(req.params.id, jobData, { new: true, runValidators: true });
     if (!job) {
       return res.status(404).json({ message: 'Job not found' });
     }
     res.json(job);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Job update error:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ 
+        message: 'Validation error', 
+        errors: Object.values(error.errors).map(e => e.message)
+      });
+    }
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
@@ -70,7 +103,7 @@ router.delete('/:id', auth, async (req, res) => {
 router.get('/admin/all', auth, async (req, res) => {
   try {
     const jobs = await Job.find().sort({ createdAt: -1 });
-    res.json(jobs);
+    res.json({ data: jobs });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

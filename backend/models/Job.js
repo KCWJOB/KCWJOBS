@@ -24,7 +24,7 @@ const JobSchema = new mongoose.Schema({
   },
   startDate: {
     type: Date,
-    required: true
+    required: false
   },
   applicationFee: {
     type: String,
@@ -40,11 +40,15 @@ const JobSchema = new mongoose.Schema({
   },
   salary: {
     type: String,
-    required: true
+    required: false
   },
   posts: {
     type: Number,
-    required: true
+    required: false
+  },
+  details: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
   },
   isActive: {
     type: Boolean,
