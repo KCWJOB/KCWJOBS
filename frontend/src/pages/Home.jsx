@@ -60,14 +60,28 @@ const Home = () => {
         jobsAPI.getAllJobs()
       ]);
 
+      console.log('API Response:', { resultsRes, admitCardsRes, upcomingJobsRes, latestRes });
+      
+      const resultsData = resultsRes.data?.data || [];
+      const admitCardsData = admitCardsRes.data?.data || [];
+      const upcomingJobsData = upcomingJobsRes.data?.data || [];
+      const latestData = latestRes.data?.data || [];
+      
       setJobs({
-        results: resultsRes.data.slice(0, 3),
-        admitCards: admitCardsRes.data.slice(0, 3),
-        upcomingJobs: upcomingJobsRes.data.slice(0, 3),
-        latest: latestRes.data.slice(0, 6) // Always show only 6 cards
+        results: resultsData.slice(0, 3),
+        admitCards: admitCardsData.slice(0, 3),
+        upcomingJobs: upcomingJobsData.slice(0, 3),
+        latest: latestData.slice(0, 6) // Always show only 6 cards
       });
     } catch (error) {
       console.error('Error fetching jobs:', error);
+      // Set empty arrays on error
+      setJobs({
+        results: [],
+        admitCards: [],
+        upcomingJobs: [],
+        latest: []
+      });
     } finally {
       setLoading(false);
     }
@@ -184,7 +198,21 @@ const Home = () => {
                     event.currentTarget.style.boxShadow = '0 15px 35px rgba(15, 23, 42, 0.08)';
                   }}
                 >
-                  {job.title.length > 60 ? `${job.title.substring(0, 60)}...` : job.title}
+                  <div>
+                    {job.title.length > 60 ? `${job.title.substring(0, 60)}...` : job.title}
+                    <br />
+                    <span style={{
+                      fontSize: '0.95rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      marginTop: '0.5rem',
+                      color: 'rgba(248, 250, 252, 0.8)'
+                    }}>
+                      <FaArrowRight /> {job.organization}
+                      {job.posts && ` • ${job.posts} Posts`}
+                    </span>
+                  </div>
                 </div>
               </Link>
             ))}
@@ -250,7 +278,7 @@ const Home = () => {
                           }}>
                             {job.title}
                           </Link>
-                          {column.id === 'upcomingJobs' && (
+                          {column.id === 'upcomingJobs' && job.posts && (
                             <span style={{ color: 'var(--color-card-muted)', fontSize: '0.85rem' }}>
                               {' '}
                               ({job.posts} Posts)

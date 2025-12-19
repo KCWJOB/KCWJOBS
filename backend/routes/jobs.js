@@ -7,11 +7,12 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const { category } = req.query;
-    const filter = category ? { category } : {};
+    const filter = category ? { category, isActive: true } : { isActive: true };
     
     const jobs = await Job.find(filter).sort({ createdAt: -1 });
     res.json({ data: jobs });
   } catch (error) {
+    console.error('Error fetching jobs:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
