@@ -16,9 +16,12 @@ const CategoryPage = () => {
   const fetchJobs = async () => {
     try {
       const response = await jobsAPI.getAllJobs(category);
-      setJobs(response.data);
+      // Handle both response.data and response.data.data formats
+      const jobsData = response.data?.data || response.data || [];
+      setJobs(jobsData);
     } catch (error) {
       console.error('Error fetching jobs:', error);
+      setJobs([]);
     } finally {
       setLoading(false);
     }

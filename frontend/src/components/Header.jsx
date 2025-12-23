@@ -1,14 +1,34 @@
 import { Link } from 'react-router-dom';
-import { FaHome, FaBriefcase, FaFileAlt, FaGraduationCap, FaSearch, FaTimes } from 'react-icons/fa';
+import { FaHome, FaBriefcase, FaFileAlt, FaGraduationCap, FaMoon, FaSun } from 'react-icons/fa';
 import logo from '../Images/logo.jpeg';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const Header = () => {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      setIsDarkTheme(true);
+      document.body.classList.add('dark-theme');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = !isDarkTheme;
+    setIsDarkTheme(newTheme);
+    
+    if (newTheme) {
+      document.body.classList.add('dark-theme');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-theme');
+      localStorage.setItem('theme', 'light');
+    }
+  };
 
   const navLinkStyle = {
-    color: 'white',
+    color: '#1a1a1a',
     textDecoration: 'none',
     display: 'flex',
     alignItems: 'center',
@@ -24,13 +44,11 @@ const Header = () => {
 
   const handleHover = (event, isEntering) => {
     if (isEntering) {
-      event.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+      event.currentTarget.style.background = 'rgba(0, 0, 0, 0.05)';
       event.currentTarget.style.transform = 'translateY(-3px) scale(1.05)';
-      event.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.3)';
     } else {
       event.currentTarget.style.background = 'transparent';
       event.currentTarget.style.transform = 'translateY(0) scale(1)';
-      event.currentTarget.style.boxShadow = 'none';
     }
   };
 
@@ -38,9 +56,15 @@ const Header = () => {
     <>
       <style>
         {`
+          @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          
           @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
-            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8), 0 0 40px rgba(59, 130, 246, 0.6); }
+            0%, 100% { box-shadow: 0 0 20px rgba(239, 242, 248, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(245, 246, 247, 0.8), 0 0 40px rgba(59, 130, 246, 0.6); }
           }
           
           @keyframes slideIn {
@@ -96,15 +120,13 @@ const Header = () => {
       </style>
       
       <header className="header-animated" style={{
-        background: 'linear-gradient(135deg, #1e3a8a 0%, #3730a3 30%, #1e40af 60%, #2563eb 100%)',
-        color: 'white',
+        background: '#ffffff',
+        color: '#1a1a1a',
         padding: '0.5rem 0',
-        boxShadow: '0 8px 32px rgba(30, 58, 138, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
         position: 'sticky',
         top: 0,
         zIndex: 999,
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+        borderBottom: '1px solid rgba(0, 0, 0, 0.1)'
       }}>
         <div className="container">
           <div style={{
@@ -115,14 +137,14 @@ const Header = () => {
             <Link to="/" className="logo-glow" style={{
               fontSize: '1.6rem',
               fontWeight: 'bold',
-              color: 'white',
+              color: '#1a1a1a',
               textDecoration: 'none',
               display: 'flex',
               alignItems: 'center',
               gap: '0.6rem',
               padding: '0.25rem 0.5rem',
               borderRadius: '12px',
-              background: 'rgba(255, 255, 255, 0.1)',
+              background: 'rgba(0, 0, 0, 0.05)',
               transition: 'all 0.3s ease'
             }}>
               <img
@@ -153,7 +175,7 @@ const Header = () => {
               </Link>
               
               <Link
-                to="/jobs"
+                to="/category/upcoming-job"
                 className="nav-item"
                 style={navLinkStyle}
                 onMouseEnter={(event) => handleHover(event, true)}
@@ -164,7 +186,7 @@ const Header = () => {
               </Link>
               
               <Link
-                to="/admit-cards"
+                to="/category/admit-card"
                 className="nav-item"
                 style={navLinkStyle}
                 onMouseEnter={(event) => handleHover(event, true)}
@@ -175,7 +197,7 @@ const Header = () => {
               </Link>
               
               <Link
-                to="/results"
+                to="/category/result"
                 className="nav-item"
                 style={navLinkStyle}
                 onMouseEnter={(event) => handleHover(event, true)}
@@ -185,189 +207,24 @@ const Header = () => {
                 Result
               </Link>
               
-
-              
-              <div style={{
-                marginLeft: '0.75rem',
-                padding: '0.5rem',
-                background: 'rgba(255, 255, 255, 0.15)',
-                borderRadius: '12px',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                backdropFilter: 'blur(5px)'
-              }}
-              onClick={() => setIsSearchOpen(true)}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
-                e.currentTarget.style.transform = 'scale(1.1)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                e.currentTarget.style.transform = 'scale(1)';
-              }}>
-                <FaSearch size={18} />
-              </div>
+              <button
+                onClick={toggleTheme}
+                style={{
+                  ...navLinkStyle,
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(event) => handleHover(event, true)}
+                onMouseLeave={(event) => handleHover(event, false)}
+                title={isDarkTheme ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+              >
+                {isDarkTheme ? <FaSun size={16} /> : <FaMoon size={16} />}
+                {isDarkTheme ? 'Light' : 'Dark'}
+              </button>
             </nav>
           </div>
         </div>
-        
-        {/* Search Modal */}
-        {isSearchOpen && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0, 0, 0, 0.8)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-            <div style={{
-              background: 'white',
-              borderRadius: '16px',
-              padding: '2rem',
-              width: '90%',
-              maxWidth: '500px',
-              position: 'relative'
-            }}>
-              <button
-                onClick={() => setIsSearchOpen(false)}
-                style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  right: '1rem',
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                  color: '#666'
-                }}
-              >
-                <FaTimes />
-              </button>
-              
-              <h3 style={{
-                marginBottom: '1.5rem',
-                color: '#333',
-                textAlign: 'center'
-              }}>
-                Search Jobs, Results & Admit Cards
-              </h3>
-              
-              <input
-                type="text"
-                placeholder="Search for jobs, results, admit cards..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '1rem',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '12px',
-                  fontSize: '1rem',
-                  marginBottom: '1rem',
-                  outline: 'none'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-              />
-              
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                gap: '0.75rem',
-                marginBottom: '1.5rem'
-              }}>
-                <button
-                  onClick={() => {
-                    setSearchQuery('RRB');
-                  }}
-                  style={{
-                    padding: '0.75rem',
-                    background: '#f3f4f6',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  RRB Jobs
-                </button>
-                <button
-                  onClick={() => {
-                    setSearchQuery('SSC');
-                  }}
-                  style={{
-                    padding: '0.75rem',
-                    background: '#f3f4f6',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  SSC Results
-                </button>
-                <button
-                  onClick={() => {
-                    setSearchQuery('UPSC');
-                  }}
-                  style={{
-                    padding: '0.75rem',
-                    background: '#f3f4f6',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  UPSC
-                </button>
-                <button
-                  onClick={() => {
-                    setSearchQuery('Admit Card');
-                  }}
-                  style={{
-                    padding: '0.75rem',
-                    background: '#f3f4f6',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  Admit Cards
-                </button>
-              </div>
-              
-              <button
-                onClick={() => {
-                  if (searchQuery.trim()) {
-                    // Perform search logic here
-                    console.log('Searching for:', searchQuery);
-                    setIsSearchOpen(false);
-                  }
-                }}
-                style={{
-                  width: '100%',
-                  padding: '1rem',
-                  background: '#3b82f6',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}
-              >
-                Search
-              </button>
-            </div>
-          </div>
-        )}
       </header>
     </>
   );

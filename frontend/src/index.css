@@ -33,11 +33,33 @@ body {
   font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
   line-height: 1.6;
   color: var(--color-text);
-  background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-strong) 45%, var(--color-bg-warm) 100%);
-  background-size: 400% 400%;
-  animation: themeGradient 32s ease infinite;
+  background: #ffffff;
   min-height: 100vh;
-  transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+body.dark-theme {
+  background: linear-gradient(135deg, #0f172a 0%, #1a2332 25%, #10b981 50%, #059669 75%, #064e3b 100%);
+  background-size: 400% 400%;
+  animation: themeGradient 20s ease infinite;
+  color: #ffffff;
+}
+
+body.dark-theme .home-section {
+  background: linear-gradient(135deg, #0f172a 0%, #1a2332 25%, #10b981 50%, #059669 75%, #064e3b 100%) !important;
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease-in-out infinite;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.2) !important;
+}
+
+body.dark-theme .home-title {
+  color: #ffffff !important;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .home-subtitle {
+  color: #d1fae5 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 body * {

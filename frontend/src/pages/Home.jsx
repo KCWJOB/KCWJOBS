@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { jobsAPI } from '../services/api';
 import JobCard from '../components/JobCard';
 import UpdatesLogin from '../components/UpdatesLogin';
-import { FaGraduationCap, FaFileAlt, FaBriefcase, FaArrowRight, FaWhatsapp } from 'react-icons/fa';
+import { FaGraduationCap, FaFileAlt, FaBriefcase, FaArrowRight, FaWhatsapp, FaSearch, FaTimes, FaSpinner, FaExternalLinkAlt, FaEye, FaMicrophone, FaMicrophoneSlash, FaTelegram, FaCircle } from 'react-icons/fa';
 
 const tilePalette = [
   'linear-gradient(135deg, #1F6E8C 0%, #0F2A44 100%)',
@@ -71,10 +71,250 @@ const Home = () => {
     latest: []
   });
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchCategory, setSearchCategory] = useState('all');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [showIframe, setShowIframe] = useState(false);
+  const [iframeUrl, setIframeUrl] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const searchTimeoutRef = useRef(null);
+  const recognitionRef = useRef(null);
+
+  // Check if URL is valid
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
+
+  // Check if URL is safe for iframe
+  const isSafeForIframe = (url) => {
+    const safeHosts = ['sarkariresult.com', 'ssc.nic.in', 'upsc.gov.in', 'ibps.in', 'rbi.org.in'];
+    try {
+      const urlObj = new URL(url);
+      return safeHosts.some(host => urlObj.hostname.includes(host));
+    } catch {
+      return false;
+    }
+  };
+
+  // Voice search setup
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      setSpeechSupported(true);
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-IN'; // English (India) for better recognition
+      
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.trim();
+        console.log('Voice transcript:', transcript);
+        setSearchQuery(transcript);
+        setIsListening(false);
+        // Trigger search immediately after voice input
+        setTimeout(() => {
+          performSearch(transcript);
+        }, 100);
+      };
+      
+      recognitionRef.current.onerror = () => {
+        setIsListening(false);
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
+
+  // Start voice search
+  const startVoiceSearch = () => {
+    if (recognitionRef.current && speechSupported) {
+      setIsListening(true);
+      recognitionRef.current.start();
+    }
+  };
+
+  // Stop voice search
+  const stopVoiceSearch = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+  };
+  // Open content function
+  const openContent = (item) => {
+    setErrorMessage('');
+    
+    if (item.url || item.link) {
+      const targetUrl = item.url || item.link;
+      
+      if (isSafeForIframe(targetUrl)) {
+        setIframeUrl(targetUrl);
+        setShowIframe(true);
+      } else {
+        window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      }
+    } else {
+      window.location.href = `/job/${item._id}`;
+    }
+  };
+  // Enhanced search function with better matching
+  const performSearch = useCallback(async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setShowResults(false);
+      setErrorMessage('');
+      return;
+    }
+
+    setIsSearching(true);
+    setErrorMessage('');
+    
+    // Check if query is a URL
+    if (isValidUrl(query)) {
+      setSearchResults([{
+        _id: 'url-' + Date.now(),
+        title: 'Open URL: ' + query,
+        organization: 'Direct Link',
+        url: query,
+        category: 'url'
+      }]);
+      setShowResults(true);
+      setIsSearching(false);
+      return;
+    }
+    
+    // Search in all jobs data
+    const allJobs = [...jobs.results, ...jobs.admitCards, ...jobs.upcomingJobs, ...jobs.latest];
+    
+    // Clean and normalize search query
+    const cleanQuery = query.toLowerCase().trim();
+    const queryWords = cleanQuery.split(/\s+/);
+
+    // Enhanced filter with multiple matching strategies
+    const filteredJobs = allJobs.filter(job => {
+      const title = (job.title || '').toLowerCase();
+      const organization = (job.organization || '').toLowerCase();
+      const description = (job.description || '').toLowerCase();
+      const category = (job.category || '').toLowerCase();
+      
+      // Exact phrase match
+      if (title.includes(cleanQuery) || organization.includes(cleanQuery) || description.includes(cleanQuery)) {
+        return true;
+      }
+      
+      // Word-by-word match (at least 50% words should match)
+      const matchingWords = queryWords.filter(word => 
+        title.includes(word) || organization.includes(word) || description.includes(word) || category.includes(word)
+      );
+      
+      return matchingWords.length >= Math.ceil(queryWords.length * 0.5);
+    });
+
+    console.log('Search Query:', cleanQuery);
+    console.log('Total Jobs:', allJobs.length);
+    console.log('Filtered Results:', filteredJobs.length);
+    console.log('Sample Job Titles:', allJobs.slice(0, 3).map(job => job.title));
+
+    if (filteredJobs.length === 0) {
+      setErrorMessage(`No results found for "${query}". Try different keywords.`);
+    }
+
+    setSearchResults(filteredJobs.slice(0, 5));
+    setShowResults(true);
+    setIsSearching(false);
+  }, [jobs]);
+
+  // Debounced search
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (searchQuery.trim()) {
+      searchTimeoutRef.current = setTimeout(() => {
+        performSearch(searchQuery);
+      }, 300);
+    } else {
+      setSearchResults([]);
+      setShowResults(false);
+    }
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery, performSearch]);
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setSearchResults([]);
+    setShowResults(false);
+  };
 
   useEffect(() => {
     fetchJobs();
   }, []);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setErrorMessage('');
+      
+      // Check if it's a URL
+      if (isValidUrl(searchQuery)) {
+        if (isSafeForIframe(searchQuery)) {
+          setIframeUrl(searchQuery);
+          setShowIframe(true);
+        } else {
+          window.open(searchQuery, '_blank', 'noopener,noreferrer');
+        }
+        return;
+      }
+      
+      // Enhanced search in all data with better matching
+      const allJobs = [...jobs.results, ...jobs.admitCards, ...jobs.upcomingJobs, ...jobs.latest];
+      
+      const cleanQuery = searchQuery.toLowerCase().trim();
+      const queryWords = cleanQuery.split(/\s+/);
+      
+      const filteredJobs = allJobs.filter(job => {
+        const title = (job.title || '').toLowerCase();
+        const organization = (job.organization || '').toLowerCase();
+        const description = (job.description || '').toLowerCase();
+        const category = (job.category || '').toLowerCase();
+        
+        // Exact phrase match
+        if (title.includes(cleanQuery) || organization.includes(cleanQuery) || description.includes(cleanQuery)) {
+          return true;
+        }
+        
+        // Word-by-word match
+        const matchingWords = queryWords.filter(word => 
+          title.includes(word) || organization.includes(word) || description.includes(word) || category.includes(word)
+        );
+        
+        return matchingWords.length >= Math.ceil(queryWords.length * 0.5);
+      });
+      
+      if (filteredJobs.length > 0) {
+        openContent(filteredJobs[0]);
+      } else {
+        setErrorMessage(`No results found for "${searchQuery}"`);
+      }
+    }
+  };
 
   const fetchJobs = async () => {
     try {
@@ -132,58 +372,563 @@ const Home = () => {
       <section style={{
         padding: '3rem 0',
         textAlign: 'center',
-        background: 'linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-strong) 45%, var(--color-bg-warm) 100%)',
-        borderBottom: '1px solid var(--color-border)'
-      }}>
+        background: '#ffffff',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+        position: 'relative',
+        overflow: 'hidden'
+      }} className="home-section">
         <div className="container">
-          {/* WhatsApp Button */}
-          <a
-            href="https://wa.me/1234567890"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: 'inline-flex',
+          {/* Live Updates Section */}
+          <div style={{
+            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%)',
+            borderRadius: '20px',
+            padding: '12px 0',
+            marginBottom: '2rem',
+            overflow: 'hidden',
+            position: 'relative',
+            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(20px)',
+            height: '80px'
+          }}>
+            <div style={{
+              display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
-              background: '#25D366',
-              color: 'white',
-              padding: '12px 28px',
-              borderRadius: '999px',
-              textDecoration: 'none',
-              fontWeight: '600',
-              marginBottom: '2rem',
-              fontSize: '1.1rem',
-              boxShadow: '0 15px 35px rgba(37, 211, 102, 0.35)'
-            }}
-          >
-            <FaWhatsapp size={20} />
-            Join WhatsApp
-          </a>
+              justifyContent: 'center',
+              gap: '12px',
+              paddingLeft: '24px',
+              marginBottom: '8px',
+              position: 'absolute',
+              top: '8px',
+              left: '0',
+              zIndex: 2
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}>
+                <FaCircle size={8} style={{ color: '#10b981', animation: 'pulse 2s infinite' }} />
+                <span style={{
+                  color: '#e2e8f0',
+                  fontWeight: '700',
+                  fontSize: '0.85rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.8px',
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
+                }}>
+                  LIVE UPDATES
+                </span>
+              </div>
+            </div>
+            
+            <style>{`
+              @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+              }
+              @keyframes scrollLeft {
+                0% { transform: translateX(100%); }
+                100% { transform: translateX(-100%); }
+              }
+              @keyframes scrollRight {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+              }
+              @keyframes newContentBlink {
+                0%, 100% { 
+                  background: linear-gradient(135deg, rgba(255, 215, 0, 0.4) 0%, rgba(255, 193, 7, 0.4) 100%);
+                  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+                }
+                50% { 
+                  background: linear-gradient(135deg, rgba(255, 215, 0, 0.8) 0%, rgba(255, 193, 7, 0.8) 100%);
+                  box-shadow: 0 0 25px rgba(255, 215, 0, 0.9);
+                }
+              }
+            `}</style>
+            
+            {/* Single Scrolling Row */}
+            <div style={{
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              position: 'absolute',
+              top: '50%',
+              left: '0',
+              right: '0',
+              transform: 'translateY(-50%)'
+            }}>
+              <div style={{
+                display: 'inline-flex',
+                gap: '30px',
+                animation: 'scrollLeft 80s linear infinite',
+                paddingLeft: '100%'
+              }}>
+                {[...jobs.results, ...jobs.admitCards, ...jobs.upcomingJobs, ...jobs.latest].slice(0, 6).map((job, index) => {
+                  // Check if this is a new job (added in last 24 hours)
+                  const isNewJob = job.createdAt && new Date(job.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000);
+                  
+                  return (
+                    <Link
+                      key={`live-${job._id}`}
+                      to={`/job/${job._id}`}
+                      style={{
+                        color: '#ffffff',
+                        textDecoration: 'none',
+                        fontSize: '0.85rem',
+                        fontWeight: '600',
+                        whiteSpace: 'nowrap',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'all 0.3s ease',
+                        padding: '6px 10px',
+                        borderRadius: '12px',
+                        animation: isNewJob ? 'newContentBlink 2s ease-in-out infinite' : 'none',
+                        border: isNewJob ? '2px solid rgba(255, 215, 0, 0.6)' : 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isNewJob) {
+                          e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                        }
+                        e.target.style.transform = 'scale(1.05)';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isNewJob) {
+                          e.target.style.background = 'transparent';
+                        }
+                        e.target.style.transform = 'scale(1)';
+                      }}
+                    >
+                      <span style={{
+                        background: isNewJob 
+                          ? 'linear-gradient(135deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 193, 7, 0.9) 100%)'
+                          : 'linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(6, 182, 212, 0.3) 100%)',
+                        padding: '2px 6px',
+                        borderRadius: '8px',
+                        fontSize: '0.7rem',
+                        fontWeight: '700',
+                        border: isNewJob 
+                          ? '1px solid rgba(255, 215, 0, 0.8)'
+                          : '1px solid rgba(16, 185, 129, 0.4)',
+                        backdropFilter: 'blur(10px)',
+                        textShadow: 'none',
+                        color: isNewJob ? '#000' : '#fff'
+                      }}>
+                        {isNewJob ? 'NEW!' : 
+                         jobs.results.includes(job) ? 'RESULT' : 
+                         jobs.admitCards.includes(job) ? 'ADMIT' :
+                         jobs.upcomingJobs.includes(job) ? 'JOB' : 'LATEST'}
+                      </span>
+                      {job.title.length > 45 ? `${job.title.substring(0, 45)}...` : job.title}
+                    </Link>
+                  );
+                })}}
+              </div>
+            </div>
+          </div>
+          <div style={{
+            display: 'flex',
+            gap: '1rem',
+            justifyContent: 'center',
+            marginBottom: '2rem'
+          }}>
+            <a
+              href="https://wa.me/1234567890"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                background: '#25D366',
+                color: 'white',
+                padding: '12px 28px',
+                borderRadius: '999px',
+                textDecoration: 'none',
+                fontWeight: '600',
+                fontSize: '1.1rem',
+                boxShadow: '0 15px 35px rgba(37, 211, 102, 0.35)'
+              }}
+            >
+              <FaWhatsapp size={20} />
+              Join WhatsApp
+            </a>
+            
+            <a
+              href="https://t.me/your_telegram_channel"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                background: '#0088cc',
+                color: 'white',
+                padding: '12px 28px',
+                borderRadius: '999px',
+                textDecoration: 'none',
+                fontWeight: '600',
+                fontSize: '1.1rem',
+                boxShadow: '0 15px 35px rgba(0, 136, 204, 0.35)'
+              }}
+            >
+              <FaTelegram size={20} />
+              Join Telegram
+            </a>
+          </div>
 
           {/* SarkariResult Tools */}
           <h1 style={{
             fontSize: 'clamp(2rem, 5vw, 2.75rem)',
             fontWeight: '700',
-            color: 'var(--text-white)',
+            color: '#1a1a1a',
             marginBottom: '0.75rem'
-          }}>
+          }} className="home-title">
             SarkariResult Tools
           </h1>
           <p style={{
             fontSize: 'clamp(1rem, 2.5vw, 1.125rem)',
-            color: 'var(--text-secondary)',
+            color: '#64748b',
             marginBottom: '2.5rem',
             maxWidth: '600px',
             margin: '0 auto 2.5rem'
-          }}>
+          }} className="home-subtitle">
             Quick access tiles for the most requested job updates, tailor-made for a bright daytime interface.
           </p>
+
+          {/* Modern Animated Search Bar */}
+          <div style={{
+            maxWidth: '1000px',
+            margin: '0 auto 3rem',
+            position: 'relative'
+          }}>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)',
+              borderRadius: '30px',
+              padding: '6px',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(40px)',
+              border: '2px solid transparent',
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85)) padding-box, linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(16, 185, 129, 0.3)) border-box',
+              height: '70px',
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              animation: 'searchBarFloat 6s ease-in-out infinite'
+            }}>
+              <style>{`
+                @keyframes searchBarFloat {
+                  0%, 100% { transform: translateY(0px); }
+                  50% { transform: translateY(-2px); }
+                }
+                @keyframes pulseGlow {
+                  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+                  50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
+                }
+                @keyframes shimmer {
+                  0% { background-position: -200% 0; }
+                  100% { background-position: 200% 0; }
+                }
+                .search-input {
+                  background: linear-gradient(90deg, transparent 0%, rgba(59, 130, 246, 0.1) 50%, transparent 100%);
+                  background-size: 200% 100%;
+                  animation: shimmer 3s ease-in-out infinite;
+                }
+                .search-input:focus {
+                  animation: none;
+                  background: transparent;
+                }
+              `}</style>
+              <form onSubmit={handleSearch} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                height: '100%'
+              }}>
+                <div style={{
+                  flex: 1,
+                  position: 'relative',
+                  height: '58px'
+                }}>
+                  <input
+                    type="text"
+                    placeholder="Search or speak..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-input"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      padding: '18px 24px',
+                      paddingRight: speechSupported ? (searchQuery ? '160px' : '120px') : (searchQuery ? '110px' : '80px'),
+                      border: 'none',
+                      borderRadius: '24px',
+                      fontSize: '1.1rem',
+                      fontWeight: '500',
+                      background: 'rgba(255, 255, 255, 0.8)',
+                      outline: 'none',
+                      color: '#1e293b',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      backdropFilter: 'blur(10px)'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.background = 'rgba(255, 255, 255, 0.95)';
+                      e.target.style.transform = 'scale(1.02)';
+                      e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.15)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.background = 'rgba(255, 255, 255, 0.8)';
+                      e.target.style.transform = 'scale(1)';
+                      e.target.style.boxShadow = 'none';
+                    }}
+                  />
+                  
+                  {/* Clear Button */}
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={clearSearch}
+                      style={{
+                        position: 'absolute',
+                        right: speechSupported ? '110px' : '70px',
+                        top: '50%',
+                        transform: 'translateY(-50%) scale(0)',
+                        background: 'linear-gradient(135deg, #f87171 0%, #ef4444 100%)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: 'white',
+                        padding: '8px',
+                        borderRadius: '50%',
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                        animation: 'scaleIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards',
+                        boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.transform = 'translateY(-50%) scale(1.1)';
+                        e.target.style.boxShadow = '0 6px 20px rgba(239, 68, 68, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.transform = 'translateY(-50%) scale(1)';
+                        e.target.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
+                      }}
+                    >
+                      <style>{`
+                        @keyframes scaleIn {
+                          from { transform: translateY(-50%) scale(0); }
+                          to { transform: translateY(-50%) scale(1); }
+                        }
+                      `}</style>
+                      <FaTimes size={14} />
+                    </button>
+                  )}
+                  
+                  {/* Search Button - Animated */}
+                  <button
+                    type="submit"
+                    disabled={isSearching}
+                    style={{
+                      position: 'absolute',
+                      right: speechSupported ? '68px' : '24px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      padding: '10px',
+                      background: isSearching 
+                        ? 'linear-gradient(135deg, #94a3b8 0%, #64748b 100%)'
+                        : 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      cursor: isSearching ? 'not-allowed' : 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      boxShadow: '0 8px 25px rgba(59, 130, 246, 0.3)',
+                      width: '40px',
+                      height: '40px',
+                      animation: isSearching ? 'pulseGlow 2s ease-in-out infinite' : 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSearching) {
+                        e.target.style.transform = 'translateY(-50%) scale(1.1) rotate(5deg)';
+                        e.target.style.boxShadow = '0 12px 35px rgba(59, 130, 246, 0.4)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSearching) {
+                        e.target.style.transform = 'translateY(-50%) scale(1) rotate(0deg)';
+                        e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.3)';
+                      }
+                    }}
+                  >
+                    {isSearching ? <FaSpinner className="fa-spin" size={14} /> : <FaSearch size={14} />}
+                  </button>
+                  
+                  {/* Voice Search Button - Animated */}
+                  {speechSupported && (
+                    <button
+                      type="button"
+                      onClick={isListening ? stopVoiceSearch : startVoiceSearch}
+                      style={{
+                        position: 'absolute',
+                        right: '20px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: isListening 
+                          ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' 
+                          : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: 'white',
+                        padding: '10px',
+                        borderRadius: '50%',
+                        width: '40px',
+                        height: '40px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        boxShadow: isListening 
+                          ? '0 0 30px rgba(239, 68, 68, 0.6)' 
+                          : '0 8px 25px rgba(16, 185, 129, 0.3)',
+                        animation: isListening ? 'pulseGlow 1s ease-in-out infinite' : 'none'
+                      }}
+                      title={isListening ? 'Stop listening' : 'Start voice search'}
+                      onMouseEnter={(e) => {
+                        e.target.style.transform = 'translateY(-50%) scale(1.1)';
+                        e.target.style.boxShadow = isListening 
+                          ? '0 0 40px rgba(239, 68, 68, 0.8)' 
+                          : '0 12px 35px rgba(16, 185, 129, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.transform = 'translateY(-50%) scale(1)';
+                        e.target.style.boxShadow = isListening 
+                          ? '0 0 30px rgba(239, 68, 68, 0.6)' 
+                          : '0 8px 25px rgba(16, 185, 129, 0.3)';
+                      }}
+                    >
+                      {isListening ? <FaMicrophoneSlash size={14} /> : <FaMicrophone size={14} />}
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+
+            {/* Real-time Search Results */}
+            {showResults && searchResults.length > 0 && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                background: 'rgba(255, 255, 255, 0.98)',
+                borderRadius: '0 0 20px 20px',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
+                backdropFilter: 'blur(30px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderTop: 'none',
+                zIndex: 1000,
+                maxHeight: '400px',
+                overflowY: 'auto'
+              }}>
+                <div style={{ padding: '16px 20px 8px', fontSize: '0.9rem', color: '#64748b', fontWeight: '600' }}>
+                  Quick Results ({searchResults.length})
+                </div>
+                {searchResults.map((result, index) => {
+                  let categoryInfo = { label: 'Job', color: '#3b82f6' };
+                  if (result.category === 'url') {
+                    categoryInfo = { label: 'URL', color: '#8b5cf6' };
+                  } else if (jobs.results.includes(result)) {
+                    categoryInfo = { label: 'Result', color: '#ef4444' };
+                  } else if (jobs.admitCards.includes(result)) {
+                    categoryInfo = { label: 'Admit Card', color: '#10b981' };
+                  } else if (jobs.upcomingJobs.includes(result)) {
+                    categoryInfo = { label: 'Job', color: '#f97316' };
+                  }
+                  
+                  return (
+                    <div
+                      key={result._id}
+                      onClick={() => openContent(result)}
+                      style={{
+                        padding: '12px 20px',
+                        cursor: 'pointer',
+                        borderBottom: index < searchResults.length - 1 ? '1px solid rgba(226, 232, 240, 0.5)' : 'none',
+                        transition: 'background-color 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.05)'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                    >
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        justifyContent: 'space-between',
+                        gap: '12px'
+                      }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: '600', fontSize: '0.95rem', marginBottom: '4px', color: '#1e293b' }}>
+                            {truncateText(result.title, 70)}
+                          </div>
+                          <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                            {result.organization}
+                            {result.posts && ` • ${result.posts} Posts`}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{
+                            background: categoryInfo.color,
+                            color: 'white',
+                            padding: '4px 8px',
+                            borderRadius: '12px',
+                            fontSize: '0.75rem',
+                            fontWeight: '600',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {categoryInfo.label}
+                          </span>
+                          {result.url && (
+                            <FaExternalLinkAlt size={12} style={{ color: '#64748b' }} />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            
+            {/* Error Message */}
+            {errorMessage && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                background: 'rgba(255, 255, 255, 0.98)',
+                borderRadius: '0 0 20px 20px',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
+                backdropFilter: 'blur(30px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderTop: 'none',
+                zIndex: 1000,
+                padding: '20px',
+                textAlign: 'center'
+              }}>
+                <div style={{ color: '#ef4444', fontSize: '0.9rem', fontWeight: '500' }}>
+                  {errorMessage}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Dynamic Job Cards Grid */}
           <div className="job-cards-grid" style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '1.25rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(clamp(250px, 30vw, 320px), 1fr))',
+            gap: 'clamp(0.8rem, 2vw, 1.2rem)',
             marginBottom: '3rem',
             gridAutoRows: '1fr'
           }}>
@@ -197,14 +942,14 @@ const Home = () => {
                   style={{
                     background: tilePalette[index % tilePalette.length],
                     color: '#ffffff',
-                    padding: '1.75rem',
-                    borderRadius: '20px',
+                    padding: '1.25rem',
+                    borderRadius: '16px',
                     textAlign: 'left',
                     fontWeight: '600',
-                    fontSize: 'clamp(0.9rem, 2.5vw, 1.05rem)',
+                    fontSize: 'clamp(0.8rem, 2vw, 0.95rem)',
                     cursor: 'pointer',
                     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                    boxShadow: '0 6px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     height: '100%',
                     display: 'flex',
@@ -212,7 +957,7 @@ const Home = () => {
                     justifyContent: 'space-between',
                     backdropFilter: 'blur(10px)',
                     textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
-                    minHeight: 'clamp(160px, 22vw, 220px)'
+                    minHeight: 'clamp(90px, 12vw, 120px)'
                   }}
                   onMouseEnter={(event) => {
                     event.currentTarget.style.transform = 'translateY(-8px) scale(1.05)';
@@ -227,11 +972,11 @@ const Home = () => {
                     {job.title.length > 60 ? `${job.title.substring(0, 60)}...` : job.title}
                     <br />
                     <span style={{
-                      fontSize: '0.95rem',
+                      fontSize: '0.85rem',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.35rem',
-                      marginTop: '0.5rem',
+                      gap: '0.3rem',
+                      marginTop: '0.4rem',
                       color: 'rgba(248, 250, 252, 0.8)'
                     }}>
                       <FaArrowRight /> {job.organization}
@@ -322,6 +1067,68 @@ const Home = () => {
 
       {/* Updates Login Section */}
       <UpdatesLogin />
+
+      {/* Iframe Modal */}
+      {showIframe && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.8)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px'
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            width: '100%',
+            height: '100%',
+            maxWidth: '1200px',
+            maxHeight: '800px',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              padding: '16px 20px',
+              borderBottom: '1px solid #e2e8f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <div style={{ fontWeight: '600', color: '#1e293b' }}>
+                {iframeUrl}
+              </div>
+              <button
+                onClick={() => setShowIframe(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '8px',
+                  color: '#64748b'
+                }}
+              >
+                <FaTimes size={16} />
+              </button>
+            </div>
+            <iframe
+              src={iframeUrl}
+              style={{
+                flex: 1,
+                border: 'none',
+                width: '100%'
+              }}
+              title="Content Viewer"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

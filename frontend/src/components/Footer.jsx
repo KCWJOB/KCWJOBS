@@ -1,4 +1,5 @@
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaGlobe } from 'react-icons/fa';
+import logo from '../Images/Logo.jpeg';
 
 const Footer = () => {
   return (
@@ -34,11 +35,18 @@ const Footer = () => {
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem',
+              gap: '0.75rem',
               marginBottom: '1rem'
             }}>
-              <FaGlobe size={24} style={{ color: '#93c5fd' }} />
-              <h3 style={{ fontSize: '1.25rem', color: '#ffffff', margin: 0 }}>Sarkari Result Portal</h3>
+              <img
+                src={logo}
+                alt="Kasim Cyber World"
+                style={{
+                  height: '32px',
+                  width: 'auto',
+                  borderRadius: '6px'
+                }}
+              />
             </div>
             <p style={{ color: '#d1d5db', lineHeight: '1.7' }}>
               Your trusted source for government job notifications, results, and admit cards. 
@@ -112,7 +120,7 @@ const Footer = () => {
           color: '#d1d5db',
           animation: 'fadeIn 1s ease-out 0.6s both'
         }}>
-          <p>&copy; 2024 Sarkari Result Portal. All rights reserved.</p>
+          <p>&copy; 2024 Kasim Cyber World. All rights reserved.</p>
         </div>
       </div>
     </footer>
