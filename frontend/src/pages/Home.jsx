@@ -17,26 +17,43 @@ const quickCTAs = [
 const highlightColumnsConfig = [
   {
     id: 'results',
-    title: 'Result Updates',
-    accent: '#dc2626',
-    tint: '#fff5f5',
-    empty: 'No results available'
+    title: 'Latest Results',
+    subtitle: 'Fresh merit lists + score cards',
+    headerGradient: 'linear-gradient(120deg, #f43f5e 0%, #ef4444 55%, #dc2626 100%)',
+    empty: 'No results available',
+    icon: <FaGraduationCap size={22} />,
+    viewAllLabel: 'View All Results',
+    viewAllLink: '/category/result',
+    ctaTint: '#fef2f2',
+    ctaColor: '#b91c1c'
   },
   {
     id: 'admitCards',
     title: 'Admit Cards',
-    accent: '#0ea5e9',
-    tint: '#ecfeff',
-    empty: 'No admit cards available'
+    subtitle: 'Instant hall ticket drops',
+    headerGradient: 'linear-gradient(120deg, #10b981 0%, #059669 55%, #047857 100%)',
+    empty: 'No admit cards available',
+    icon: <FaFileAlt size={22} />,
+    viewAllLabel: 'View All Admit Cards',
+    viewAllLink: '/category/admit-card',
+    ctaTint: '#ecfdf5',
+    ctaColor: '#047857'
   },
   {
     id: 'upcomingJobs',
-    title: 'Latest Jobs',
-    accent: '#f97316',
-    tint: '#fff7ed',
-    empty: 'No jobs available'
+    title: 'Job Alerts',
+    subtitle: 'Daily hiring + notifications',
+    headerGradient: 'linear-gradient(120deg, #f97316 0%, #f97316 45%, #ea580c 100%)',
+    empty: 'No jobs available',
+    icon: <FaBriefcase size={22} />,
+    viewAllLabel: 'View All Jobs',
+    viewAllLink: '/category/upcoming-job',
+    ctaTint: '#fff7ed',
+    ctaColor: '#c2410c'
   }
 ];
+
+const truncateText = (text = '', limit = 60) => (text.length > limit ? `${text.slice(0, limit)}...` : text);
 
 const Home = () => {
   const [jobs, setJobs] = useState({
@@ -244,53 +261,50 @@ const Home = () => {
           }}>
             {highlightColumnsConfig.map((column) => {
               const columnJobs = jobs[column.id] || [];
+              const hasJobs = columnJobs.length > 0;
               return (
-                <div
-                  key={column.id}
-                  className="card-rich"
-                  style={{
-                    borderRadius: '24px',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '100%'
-                  }}
-                >
-                  <div style={{
-                    background: column.tint,
-                    padding: '1.25rem',
-                    textAlign: 'center',
-                    fontSize: '1.4rem',
-                    fontWeight: '700',
-                    color: column.accent,
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
-                  }}>
-                    {column.title}
+                <div key={column.id} className="status-card">
+                  <div className="status-card__header" style={{ background: column.headerGradient }}>
+                    <div className="status-card__title">
+                      <span className="status-card__icon">
+                        {column.icon}
+                      </span>
+                      <div>
+                        <p>{column.title}</p>
+                        <span className="status-card__subtitle">{column.subtitle}</span>
+                      </div>
+                    </div>
+                    <span className="status-card__count">{columnJobs.length}</span>
                   </div>
-                  <div style={{ padding: '1.25rem', flex: 1 }}>
-                    <ul style={{ listStyle: 'none', padding: 0, color: 'var(--color-card-text)' }}>
-                      {columnJobs.slice(0, 6).map((job) => (
-                        <li key={job._id} style={{ marginBottom: '0.75rem' }}>
-                          <Link to={`/job/${job._id}`} style={{
-                            color: 'var(--color-card-text)',
-                            textDecoration: 'none',
-                            fontWeight: '600'
-                          }}>
-                            {job.title}
-                          </Link>
-                          {column.id === 'upcomingJobs' && job.posts && (
-                            <span style={{ color: 'var(--color-card-muted)', fontSize: '0.85rem' }}>
-                              {' '}
-                              ({job.posts} Posts)
+
+                  <div className={`status-card__body${hasJobs ? '' : ' status-card__body--empty'}`}>
+                    {hasJobs ? (
+                      <ul className="status-card__list">
+                        {columnJobs.slice(0, 3).map((job) => (
+                          <li key={job._id}>
+                            <Link to={`/job/${job._id}`}>
+                              {truncateText(job.title)}
+                            </Link>
+                            <span>
+                              {job.organization || 'Details inside'}
+                              {column.id === 'upcomingJobs' && job.posts ? ` - ${job.posts} Posts` : ''}
                             </span>
-                          )}
-                        </li>
-                      ))}
-                      {columnJobs.length === 0 && (
-                        <li style={{ color: 'var(--color-card-muted)', fontStyle: 'italic' }}>{column.empty}</li>
-                      )}
-                    </ul>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="status-card__empty">{column.empty}</p>
+                    )}
                   </div>
+
+                  <Link
+                    to={column.viewAllLink}
+                    className="status-card__cta"
+                    style={{ background: column.ctaTint, color: column.ctaColor || 'var(--color-text)' }}
+                  >
+                    {column.viewAllLabel}
+                    <FaArrowRight size={16} />
+                  </Link>
                 </div>
               );
             })}

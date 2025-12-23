@@ -47,7 +47,7 @@ const Header = () => {
             gap: '0.5rem'
           }}>
             <FaBell />
-            Sarkari Result Portal
+            kcw  Jobs
           </Link>
           
           <nav style={{
