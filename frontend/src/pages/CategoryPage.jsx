@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { jobsAPI } from '../services/api';
-import JobCard from '../components/JobCard';
-import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft, FaCalendarAlt, FaBuilding, FaExternalLinkAlt, FaEye } from 'react-icons/fa';
 
 const CategoryPage = () => {
   const { category } = useParams();
@@ -114,7 +113,7 @@ const CategoryPage = () => {
         </div>
       </section>
 
-      {/* Jobs Section */}
+      {/* Jobs Section - List Format */}
       <section style={{ padding: '3rem 0' }}>
         <div className="container">
           {jobs.length === 0 ? (
@@ -141,10 +140,212 @@ const CategoryPage = () => {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-3">
-              {jobs.map((job) => (
-                <JobCard key={job._id} job={job} />
-              ))}
+            <div style={{
+              background: '#ffffff',
+              borderRadius: '12px',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+              overflow: 'hidden',
+              border: '1px solid rgba(0, 0, 0, 0.05)'
+            }}>
+              {/* List Header */}
+              <div style={{
+                background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                padding: '1rem 1.5rem',
+                borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+                display: 'grid',
+                gridTemplateColumns: '1fr auto auto auto',
+                gap: '1rem',
+                alignItems: 'center',
+                fontWeight: '600',
+                fontSize: '0.9rem',
+                color: '#475569'
+              }}>
+                <div>Job Title & Organization</div>
+                <div style={{ textAlign: 'center', minWidth: '120px' }}>Date</div>
+                <div style={{ textAlign: 'center', minWidth: '100px' }}>Category</div>
+                <div style={{ textAlign: 'center', minWidth: '100px' }}>Action</div>
+              </div>
+
+              {/* List Items */}
+              <div>
+                {jobs.map((job, index) => {
+                  const formatDate = (date) => {
+                    return new Date(date).toLocaleDateString('en-IN', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    });
+                  };
+
+                  const getCategoryColor = (category) => {
+                    switch (category) {
+                      case 'result':
+                        return '#059669';
+                      case 'admit-card':
+                        return '#2563eb';
+                      case 'upcoming-job':
+                        return '#dc2626';
+                      default:
+                        return '#6b7280';
+                    }
+                  };
+
+                  const getCategoryLabel = (category) => {
+                    switch (category) {
+                      case 'result':
+                        return 'Result';
+                      case 'admit-card':
+                        return 'Admit Card';
+                      case 'upcoming-job':
+                        return 'Job Opening';
+                      default:
+                        return category;
+                    }
+                  };
+
+                  const getActionButton = (category) => {
+                    switch (category) {
+                      case 'result':
+                        return { text: 'Check Result', icon: FaExternalLinkAlt };
+                      case 'admit-card':
+                        return { text: 'Download', icon: FaExternalLinkAlt };
+                      case 'upcoming-job':
+                        return { text: 'Apply Now', icon: FaExternalLinkAlt };
+                      default:
+                        return { text: 'View Details', icon: FaEye };
+                    }
+                  };
+
+                  return (
+                    <div
+                      key={job._id}
+                      style={{
+                        padding: '1.25rem 1.5rem',
+                        borderBottom: index < jobs.length - 1 ? '1px solid rgba(0, 0, 0, 0.05)' : 'none',
+                        display: 'grid',
+                        gridTemplateColumns: '1fr auto auto auto',
+                        gap: '1rem',
+                        alignItems: 'center',
+                        transition: 'all 0.2s ease',
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#f8fafc';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }}
+                    >
+                      {/* Job Title & Organization */}
+                      <div>
+                        <h3 style={{
+                          fontSize: '1.1rem',
+                          fontWeight: '600',
+                          marginBottom: '0.5rem',
+                          color: '#1e293b',
+                          lineHeight: '1.4'
+                        }}>
+                          {job.title}
+                        </h3>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          color: '#64748b',
+                          fontSize: '0.9rem'
+                        }}>
+                          <FaBuilding size={14} />
+                          <span>{job.organization}</span>
+                          {job.category === 'upcoming-job' && job.posts && (
+                            <span style={{
+                              background: '#dcfce7',
+                              color: '#166534',
+                              padding: '2px 8px',
+                              borderRadius: '12px',
+                              fontSize: '0.8rem',
+                              fontWeight: '500',
+                              marginLeft: '0.5rem'
+                            }}>
+                              {job.posts} Posts
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Date */}
+                      <div style={{
+                        textAlign: 'center',
+                        minWidth: '120px'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.5rem',
+                          color: '#64748b',
+                          fontSize: '0.9rem'
+                        }}>
+                          <FaCalendarAlt size={14} />
+                          <span>{formatDate(job.lastDate)}</span>
+                        </div>
+                      </div>
+
+                      {/* Category Badge */}
+                      <div style={{
+                        textAlign: 'center',
+                        minWidth: '100px'
+                      }}>
+                        <span style={{
+                          background: getCategoryColor(job.category),
+                          color: '#ffffff',
+                          padding: '4px 12px',
+                          borderRadius: '20px',
+                          fontSize: '0.8rem',
+                          fontWeight: '500',
+                          whiteSpace: 'nowrap'
+                        }}>
+                          {getCategoryLabel(job.category)}
+                        </span>
+                      </div>
+
+                      {/* Action Button */}
+                      <div style={{
+                        textAlign: 'center',
+                        minWidth: '100px'
+                      }}>
+                        <Link
+                          to={`/job/${job._id}`}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                            color: '#ffffff',
+                            padding: '8px 16px',
+                            borderRadius: '8px',
+                            textDecoration: 'none',
+                            fontSize: '0.85rem',
+                            fontWeight: '500',
+                            transition: 'all 0.2s ease',
+                            whiteSpace: 'nowrap'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = 'translateY(-2px)';
+                            e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.3)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = 'translateY(0)';
+                            e.target.style.boxShadow = 'none';
+                          }}
+                        >
+                          {getActionButton(job.category).text}
+                          <FaExternalLinkAlt size={12} />
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

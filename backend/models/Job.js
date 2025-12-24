@@ -57,6 +57,14 @@ const JobSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  deletionScheduledAt: {
+    type: Date,
+    required: false
+  },
+  deletionNotified: {
+    type: Boolean,
+    default: false
   }
 });
 

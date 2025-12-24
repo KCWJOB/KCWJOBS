@@ -1,10 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FaHome, FaBriefcase, FaFileAlt, FaGraduationCap, FaMoon, FaSun } from 'react-icons/fa';
 import logo from '../Images/logo.jpeg';
 import { useState, useEffect } from 'react';
 
 const Header = () => {
   const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const location = useLocation();
+  const isAdminPage = location.pathname.includes('/admin');
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
@@ -137,19 +139,24 @@ const Header = () => {
             flexWrap: 'wrap',
             gap: 'clamp(0.5rem, 2vw, 1rem)'
           }}>
-            <Link to="/" className="logo-glow" style={{
-              fontSize: 'clamp(1.2rem, 4vw, 1.6rem)',
-              fontWeight: 'bold',
-              color: '#1a1a1a',
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'clamp(0.4rem, 1.5vw, 0.6rem)',
-              padding: 'clamp(0.2rem, 1vw, 0.25rem) clamp(0.4rem, 1.5vw, 0.5rem)',
-              borderRadius: '12px',
-              background: 'rgba(0, 0, 0, 0.05)',
-              transition: 'all 0.3s ease'
-            }}>
+            <Link 
+              to="/" 
+              className="logo-glow" 
+              target={isAdminPage ? "_blank" : "_self"}
+              rel={isAdminPage ? "noopener noreferrer" : undefined}
+              style={{
+                fontSize: 'clamp(1.2rem, 4vw, 1.6rem)',
+                fontWeight: 'bold',
+                color: '#1a1a1a',
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'clamp(0.4rem, 1.5vw, 0.6rem)',
+                padding: 'clamp(0.2rem, 1vw, 0.25rem) clamp(0.4rem, 1.5vw, 0.5rem)',
+                borderRadius: '12px',
+                background: 'rgba(0, 0, 0, 0.05)',
+                transition: 'all 0.3s ease'
+              }}>
               <img
                 src={logo}
                 alt="Sarkari Result"
@@ -170,6 +177,8 @@ const Header = () => {
               <Link
                 to="/"
                 className="nav-item"
+                target={isAdminPage ? "_blank" : "_self"}
+                rel={isAdminPage ? "noopener noreferrer" : undefined}
                 style={navLinkStyle}
                 onMouseEnter={(event) => handleHover(event, true)}
                 onMouseLeave={(event) => handleHover(event, false)}
@@ -181,6 +190,8 @@ const Header = () => {
               <Link
                 to="/category/upcoming-job"
                 className="nav-item"
+                target={isAdminPage ? "_blank" : "_self"}
+                rel={isAdminPage ? "noopener noreferrer" : undefined}
                 style={navLinkStyle}
                 onMouseEnter={(event) => handleHover(event, true)}
                 onMouseLeave={(event) => handleHover(event, false)}
@@ -192,6 +203,8 @@ const Header = () => {
               <Link
                 to="/category/admit-card"
                 className="nav-item"
+                target={isAdminPage ? "_blank" : "_self"}
+                rel={isAdminPage ? "noopener noreferrer" : undefined}
                 style={navLinkStyle}
                 onMouseEnter={(event) => handleHover(event, true)}
                 onMouseLeave={(event) => handleHover(event, false)}
@@ -203,6 +216,8 @@ const Header = () => {
               <Link
                 to="/category/result"
                 className="nav-item"
+                target={isAdminPage ? "_blank" : "_self"}
+                rel={isAdminPage ? "noopener noreferrer" : undefined}
                 style={navLinkStyle}
                 onMouseEnter={(event) => handleHover(event, true)}
                 onMouseLeave={(event) => handleHover(event, false)}

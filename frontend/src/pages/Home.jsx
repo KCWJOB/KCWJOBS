@@ -6,14 +6,14 @@ import YouTubeSection from '../components/YouTubeSection';
 import { FaGraduationCap, FaFileAlt, FaBriefcase, FaArrowRight, FaWhatsapp, FaSearch, FaTimes, FaSpinner, FaExternalLinkAlt, FaEye, FaMicrophone, FaMicrophoneSlash, FaTelegram, FaCircle } from 'react-icons/fa';
 
 const tilePalette = [
-  'linear-gradient(135deg, #1F6E8C 0%, #0F2A44 100%)',
-  'linear-gradient(135deg, #1B3A4B 0%, #1F6E8C 100%)', 
-  'linear-gradient(135deg, #3A7CA5 0%, #1B3A4B 100%)',
-  'linear-gradient(135deg, #0F2A44 0%, #3A7CA5 100%)',
-  'linear-gradient(135deg, #1F6E8C 0%, #FF9A5A 100%)',
-  'linear-gradient(135deg, #1B3A4B 0%, #FFB07C 100%)',
-  'linear-gradient(135deg, #3A7CA5 0%, #FF9A5A 100%)',
-  'linear-gradient(135deg, #0F2A44 0%, #FFB07C 100%)'
+  'linear-gradient(135deg, #1f2937 0%, #374151 100%)',
+  'linear-gradient(135deg, #374151 0%, #4b5563 100%)', 
+  'linear-gradient(135deg, #4b5563 0%, #6b7280 100%)',
+  'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)',
+  'linear-gradient(135deg, #1f2937 0%, #3b82f6 100%)',
+  'linear-gradient(135deg, #374151 0%, #10b981 100%)',
+  'linear-gradient(135deg, #4b5563 0%, #f59e0b 100%)',
+  'linear-gradient(135deg, #6b7280 0%, #ef4444 100%)'
 ];
 
 const quickCTAs = [];
@@ -330,9 +330,9 @@ const Home = () => {
       const latestData = latestRes.data?.data || latestRes.data || [];
       
       setJobs({
-        results: resultsData.slice(0, 10),
-        admitCards: admitCardsData.slice(0, 10),
-        upcomingJobs: upcomingJobsData.slice(0, 10),
+        results: resultsData.slice(0, 20),
+        admitCards: admitCardsData.slice(0, 20),
+        upcomingJobs: upcomingJobsData.slice(0, 20),
         latest: latestData.slice(0, 6)
       });
     } catch (error) {
@@ -375,15 +375,15 @@ const Home = () => {
       }} className="home-section">
         <div className="container">
           {/* Live Updates Section */}
-          <div style={{
-            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%)',
+          <div className="live-updates-section" style={{
+            background: 'linear-gradient(135deg, #1e293b 0%, #334155 25%, #475569 50%, #64748b 75%, #94a3b8 100%)',
             borderRadius: 'clamp(12px, 4vw, 20px)',
             padding: 'clamp(8px, 2vw, 12px) 0',
             marginBottom: 'clamp(1.5rem, 4vw, 2rem)',
             overflow: 'hidden',
             position: 'relative',
-            boxShadow: '0 20px 40px rgba(15, 23, 42, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 20px 40px rgba(30, 41, 59, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
             backdropFilter: 'blur(20px)',
             minHeight: 'fit-content',
             height: 'auto'
@@ -403,14 +403,15 @@ const Home = () => {
                 alignItems: 'center',
                 gap: '6px'
               }}>
-                <FaCircle size={8} style={{ color: '#ff0000', animation: 'pulse 2s infinite' }} />
+                <FaCircle size={8} style={{ color: '#9ACD32', animation: 'fastBlink 0.5s infinite' }} />
                 <span style={{
-                  color: '#e2e8f0',
+                  color: '#f1f5f9',
                   fontWeight: '700',
                   fontSize: '0.85rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.8px',
-                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
+                  animation: 'heartbeat 1.5s ease-in-out infinite'
                 }}>
                   LIVE UPDATES
                 </span>
@@ -422,6 +423,17 @@ const Home = () => {
                 0%, 100% { opacity: 1; }
                 50% { opacity: 0.5; }
               }
+              @keyframes fastBlink {
+                0%, 50% { opacity: 1; }
+                51%, 100% { opacity: 0.3; }
+              }
+              @keyframes heartbeat {
+                0%, 100% { transform: scale(1); }
+                14% { transform: scale(1.1); }
+                28% { transform: scale(1); }
+                42% { transform: scale(1.1); }
+                70% { transform: scale(1); }
+              }
               @keyframes slideMove {
                 0% { transform: translateX(0); }
                 100% { transform: translateX(-50px); }
@@ -431,12 +443,26 @@ const Home = () => {
                 100% { transform: translateX(-100%); }
               }
               @keyframes colorPulse {
-                0%, 100% { color: #FFD700; }
-                50% { color: #FF8C00; }
+                0%, 100% { color: #ffffff; }
+                50% { color: #f1f5f9; }
+              }
+              @keyframes bounceNew {
+                0%, 100% { transform: scale(1) rotate(0deg); }
+                25% { transform: scale(1.1) rotate(-2deg); }
+                50% { transform: scale(1.2) rotate(2deg); }
+                75% { transform: scale(1.1) rotate(-1deg); }
+              }
+              @keyframes marqueeLeft {
+                0% { transform: translateX(100%); }
+                100% { transform: translateX(-100%); }
+              }
+              @keyframes marqueeRight {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
               }
             `}</style>
             
-            {/* Content Display - Only Latest Updates (1 Week) */}
+            {/* Content Display - 8 Updates in 2 Rows */}
             {(() => {
               const weeklyUpdates = [...jobs.results, ...jobs.admitCards, ...jobs.upcomingJobs, ...jobs.latest]
                 .filter(job => job.createdAt && new Date(job.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
@@ -446,8 +472,9 @@ const Home = () => {
                   <div style={{
                     padding: '30px 20px',
                     textAlign: 'center',
-                    color: '#e2e8f0',
-                    fontSize: '0.9rem'
+                    color: '#f1f5f9',
+                    fontSize: '0.9rem',
+                    fontWeight: '500'
                   }}>
                     No new updates in the last week
                   </div>
@@ -456,56 +483,180 @@ const Home = () => {
               
               return (
                 <div style={{
-                  padding: '15px 20px'
+                  padding: '15px 0'
                 }}>
                   <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                    gap: '15px'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '10px'
                   }}>
-                    {weeklyUpdates.slice(0, 6).map((job, index) => (
-                      <Link
-                        key={`weekly-${job._id}`}
-                        to={`/job/${job._id}`}
-                        style={{
-                          color: '#FFD700',
-                          textDecoration: 'none',
-                          fontSize: '0.85rem',
-                          fontWeight: '800',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          transition: 'all 0.3s ease',
-                          padding: '10px 12px',
-                          borderRadius: '10px',
-                          animation: 'colorPulse 2s ease-in-out infinite',
-                          textAlign: 'left'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                          e.target.style.transform = 'scale(1.05)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.background = 'transparent';
-                          e.target.style.transform = 'scale(1)';
-                        }}
-                      >
-                        <span style={{
-                          background: 'rgba(255, 0, 0, 0.9)',
-                          padding: '3px 8px',
-                          borderRadius: '8px',
-                          fontSize: '0.7rem',
-                          fontWeight: '800',
-                          color: '#fff',
-                          flexShrink: 0
-                        }}>
-                          🔥 NEW!
-                        </span>
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {job.title.length > 40 ? `${job.title.substring(0, 40)}...` : job.title}
-                        </span>
-                      </Link>
-                    ))}
+                    {/* Row 1 - Left to Right */}
+                    <div style={{
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      position: 'relative',
+                      height: '50px'
+                    }}>
+                      <div style={{
+                        display: 'inline-flex',
+                        gap: '30px',
+                        animation: 'marqueeLeft 40s linear infinite',
+                        alignItems: 'center'
+                      }}>
+                        {weeklyUpdates.slice(0, 4).map((job, index) => (
+                          <Link
+                            key={`row1-${job._id}`}
+                            to={`/job/${job._id}`}
+                            style={{
+                              color: '#ffffff',
+                              textDecoration: 'none',
+                              fontSize: '0.9rem',
+                              fontWeight: '800',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              padding: '8px 16px',
+                              borderRadius: '10px',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              textShadow: '0 2px 4px rgba(0, 0, 0, 0.6)',
+                              whiteSpace: 'nowrap',
+                              minWidth: 'max-content'
+                            }}
+                          >
+                            <span style={{
+                              background: 'rgba(255, 0, 0, 0.9)',
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              fontSize: '0.7rem',
+                              fontWeight: '800',
+                              color: '#fff',
+                              animation: 'bounceNew 2s ease-in-out infinite'
+                            }}>
+                              🔥 NEW!
+                            </span>
+                            <span>{job.title}</span>
+                          </Link>
+                        ))}
+                        {weeklyUpdates.slice(0, 4).map((job, index) => (
+                          <Link
+                            key={`row1-dup-${job._id}`}
+                            to={`/job/${job._id}`}
+                            style={{
+                              color: '#ffffff',
+                              textDecoration: 'none',
+                              fontSize: '0.9rem',
+                              fontWeight: '800',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              padding: '8px 16px',
+                              borderRadius: '10px',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              textShadow: '0 2px 4px rgba(0, 0, 0, 0.6)',
+                              whiteSpace: 'nowrap',
+                              minWidth: 'max-content'
+                            }}
+                          >
+                            <span style={{
+                              background: 'rgba(255, 0, 0, 0.9)',
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              fontSize: '0.7rem',
+                              fontWeight: '800',
+                              color: '#fff',
+                              animation: 'bounceNew 2s ease-in-out infinite'
+                            }}>
+                              🔥 NEW!
+                            </span>
+                            <span>{job.title}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Row 2 - Right to Left */}
+                    <div style={{
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      position: 'relative',
+                      height: '50px'
+                    }}>
+                      <div style={{
+                        display: 'inline-flex',
+                        gap: '30px',
+                        animation: 'marqueeRight 40s linear infinite',
+                        alignItems: 'center'
+                      }}>
+                        {weeklyUpdates.slice(4, 8).map((job, index) => (
+                          <Link
+                            key={`row2-${job._id}`}
+                            to={`/job/${job._id}`}
+                            style={{
+                              color: '#ffffff',
+                              textDecoration: 'none',
+                              fontSize: '0.9rem',
+                              fontWeight: '800',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              padding: '8px 16px',
+                              borderRadius: '10px',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              textShadow: '0 2px 4px rgba(0, 0, 0, 0.6)',
+                              whiteSpace: 'nowrap',
+                              minWidth: 'max-content'
+                            }}
+                          >
+                            <span style={{
+                              background: 'rgba(255, 0, 0, 0.9)',
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              fontSize: '0.7rem',
+                              fontWeight: '800',
+                              color: '#fff',
+                              animation: 'bounceNew 2s ease-in-out infinite'
+                            }}>
+                              🔥 NEW!
+                            </span>
+                            <span>{job.title}</span>
+                          </Link>
+                        ))}
+                        {weeklyUpdates.slice(4, 8).map((job, index) => (
+                          <Link
+                            key={`row2-dup-${job._id}`}
+                            to={`/job/${job._id}`}
+                            style={{
+                              color: '#ffffff',
+                              textDecoration: 'none',
+                              fontSize: '0.9rem',
+                              fontWeight: '800',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              padding: '8px 16px',
+                              borderRadius: '10px',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              textShadow: '0 2px 4px rgba(0, 0, 0, 0.6)',
+                              whiteSpace: 'nowrap',
+                              minWidth: 'max-content'
+                            }}
+                          >
+                            <span style={{
+                              background: 'rgba(255, 0, 0, 0.9)',
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              fontSize: '0.7rem',
+                              fontWeight: '800',
+                              color: '#fff',
+                              animation: 'bounceNew 2s ease-in-out infinite'
+                            }}>
+                              🔥 NEW!
+                            </span>
+                            <span>{job.title}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
@@ -563,29 +714,10 @@ const Home = () => {
             </a>
           </div>
 
-          {/* SarkariResult Tools */}
-          <h1 style={{
-            fontSize: 'clamp(2rem, 5vw, 2.75rem)',
-            fontWeight: '700',
-            color: '#1a1a1a',
-            marginBottom: '0.75rem'
-          }} className="home-title">
-            SarkariResult Tools
-          </h1>
-          <p style={{
-            fontSize: 'clamp(1rem, 2.5vw, 1.125rem)',
-            color: '#64748b',
-            marginBottom: '2.5rem',
-            maxWidth: '600px',
-            margin: '0 auto 2.5rem'
-          }} className="home-subtitle">
-            Quick access tiles for the most requested job updates, tailor-made for a bright daytime interface.
-          </p>
-
           {/* Modern Animated Search Bar */}
           <div style={{
             maxWidth: 'clamp(300px, 90vw, 1000px)',
-            margin: '0 auto clamp(2rem, 6vw, 3rem)',
+            margin: '0 auto clamp(1rem, 3vw, 1.5rem)',
             position: 'relative'
           }}>
             <div style={{
@@ -925,6 +1057,7 @@ const Home = () => {
                 style={{ textDecoration: 'none', display: 'block', height: '100%' }}
               >
                 <div
+                  className="job-card"
                   style={{
                     background: tilePalette[index % tilePalette.length],
                     color: '#ffffff',
@@ -935,14 +1068,14 @@ const Home = () => {
                     fontSize: 'clamp(0.8rem, 2vw, 0.95rem)',
                     cursor: 'pointer',
                     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    boxShadow: '0 6px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     backdropFilter: 'blur(10px)',
-                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.5)',
                     minHeight: 'clamp(90px, 12vw, 120px)'
                   }}
                   onMouseEnter={(event) => {
@@ -963,7 +1096,7 @@ const Home = () => {
                       alignItems: 'center',
                       gap: '0.3rem',
                       marginTop: '0.4rem',
-                      color: 'rgba(248, 250, 252, 0.8)'
+                      color: 'rgba(255, 255, 255, 0.9)'
                     }}>
                       <FaArrowRight /> {job.organization}
                       {job.posts && ` • ${job.posts} Posts`}
@@ -1001,21 +1134,17 @@ const Home = () => {
                         <span className="status-card__subtitle">{column.subtitle}</span>
                       </div>
                     </div>
-                    <span className="status-card__count" title={`${columnJobs.length} total`}>{columnJobs.length > 10 ? '10+' : columnJobs.length}</span>
+                    <span className="status-card__count" title={`${columnJobs.length} total`}>{columnJobs.length > 20 ? '20+' : columnJobs.length}</span>
                   </div>
 
                   <div className={`status-card__body${hasJobs ? '' : ' status-card__body--empty'}`}>
                     {hasJobs ? (
                       <ul className="status-card__list">
-                        {columnJobs.slice(0, 10).map((job) => (
+                        {columnJobs.slice(0, 20).map((job) => (
                           <li key={job._id}>
                             <Link to={`/job/${job._id}`}>
                               {truncateText(job.title)}
                             </Link>
-                            <span>
-                              {job.organization || 'Details inside'}
-                              {column.id === 'upcomingJobs' && job.posts ? ` - ${job.posts} Posts` : ''}
-                            </span>
                           </li>
                         ))}
                       </ul>

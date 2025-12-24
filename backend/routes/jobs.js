@@ -1,13 +1,14 @@
 const express = require('express');
 const Job = require('../models/Job');
 const auth = require('../middleware/auth');
+const { calculateDeletionDate, getJobsForDeletionNotification, markJobsAsNotified } = require('../services/autoDelete');
 const router = express.Router();
 
 // Get all jobs by category
 router.get('/', async (req, res) => {
   try {
     const { category } = req.query;
-    let filter = {};
+    let filter = { isActive: true };
     
     if (category) {
       filter.category = category;
@@ -55,6 +56,10 @@ router.post('/', auth, async (req, res) => {
     }
     
     const job = new Job(jobData);
+    
+    // Calculate and set deletion date
+    job.deletionScheduledAt = calculateDeletionDate(job);
+    
     await job.save();
     res.status(201).json(job);
   } catch (error) {
@@ -100,6 +105,55 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(404).json({ message: 'Job not found' });
     }
     res.json({ message: 'Job deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get jobs scheduled for deletion (Admin notification)
+router.get('/admin/deletion-notifications', auth, async (req, res) => {
+  try {
+    const jobs = await getJobsForDeletionNotification();
+    res.json({ data: jobs });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Confirm deletion of jobs
+router.post('/admin/confirm-deletion', auth, async (req, res) => {
+  try {
+    const { jobIds } = req.body;
+    
+    await Job.updateMany(
+      { _id: { $in: jobIds } },
+      { isActive: false }
+    );
+    
+    res.json({ message: 'Jobs deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Postpone deletion of jobs
+router.post('/admin/postpone-deletion', auth, async (req, res) => {
+  try {
+    const { jobIds, days } = req.body;
+    
+    const jobs = await Job.find({ _id: { $in: jobIds } });
+    
+    for (const job of jobs) {
+      const newDeletionDate = new Date(job.deletionScheduledAt);
+      newDeletionDate.setDate(newDeletionDate.getDate() + (days || 7));
+      
+      await Job.findByIdAndUpdate(job._id, {
+        deletionScheduledAt: newDeletionDate,
+        deletionNotified: false
+      });
+    }
+    
+    res.json({ message: 'Deletion postponed successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

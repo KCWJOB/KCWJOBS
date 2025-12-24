@@ -70,6 +70,28 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* Light theme admin panel fixes */
+body:not(.dark-theme) {
+  background: #f8fafc;
+  color: #1f2937;
+}
+
+body:not(.dark-theme) .container {
+  color: #1f2937;
+}
+
+body:not(.dark-theme) h1,
+body:not(.dark-theme) h2,
+body:not(.dark-theme) h3 {
+  color: #111827 !important;
+}
+
+body:not(.dark-theme) p,
+body:not(.dark-theme) span,
+body:not(.dark-theme) div {
+  color: #374151;
+}
+
 body.dark-theme {
   background: linear-gradient(135deg, #0f172a 0%, #1a2332 25%, #10b981 50%, #059669 75%, #064e3b 100%);
   background-size: 400% 400%;
@@ -222,9 +244,58 @@ a {
 
 .card-rich {
   background: #ffffff;
-  color: #0f172a;
-  border: 1px solid rgba(15, 23, 42, 0.15);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  backdrop-filter: none;
+}
+
+/* Light theme card content */
+body:not(.dark-theme) .card-rich {
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+}
+
+body:not(.dark-theme) .card-rich h2,
+body:not(.dark-theme) .card-rich h3,
+body:not(.dark-theme) .card-rich p {
+  color: #1f2937 !important;
+}
+
+body:not(.dark-theme) .card-rich th {
+  color: #6b7280 !important;
+}
+
+body:not(.dark-theme) .card-rich td {
+  color: #374151 !important;
+}
+
+/* Light theme home page fixes */
+body:not(.dark-theme) .home-section {
+  background: #ffffff !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+body:not(.dark-theme) .home-title {
+  color: #1f2937 !important;
+}
+
+body:not(.dark-theme) .home-subtitle {
+  color: #6b7280 !important;
+}
+
+/* Force white text in live updates and job cards for light theme */
+body:not(.dark-theme) .live-updates-section,
+body:not(.dark-theme) .live-updates-section * {
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+}
+
+body:not(.dark-theme) .job-card,
+body:not(.dark-theme) .job-card * {
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
 }
 
 body.dark-theme .card-rich {
@@ -232,6 +303,7 @@ body.dark-theme .card-rich {
   color: var(--color-card-text);
   border: 1px solid var(--color-card-border);
   box-shadow: 0 30px 60px rgba(15, 23, 42, 0.35);
+  backdrop-filter: none;
 }
 
 .card-rich:hover {
@@ -931,4 +1003,93 @@ body.dark-theme .card-rich a {
 
 .modal-scroll::-webkit-scrollbar {
   display: none;
+}
+
+/* Category Page List Styles */
+.category-list-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.category-list-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 1rem;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.category-list-item {
+  padding: 1.25rem 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 1rem;
+  align-items: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.category-list-item:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.category-list-item:hover {
+  background-color: #f8fafc;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .category-list-header,
+  .category-list-item {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    text-align: left;
+  }
+  
+  .category-list-header {
+    display: none; /* Hide header on mobile */
+  }
+  
+  .category-list-item {
+    padding: 1rem;
+    display: block;
+  }
+  
+  .category-list-mobile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .category-list-mobile-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .category-list-mobile-action {
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-list-item {
+    padding: 0.75rem;
+  }
+  
+  .category-list-mobile-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 }

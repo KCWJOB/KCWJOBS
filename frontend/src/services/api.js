@@ -27,6 +27,9 @@ export const jobsAPI = {
   updateJob: (id, jobData) => api.put(`/jobs/${id}`, jobData),
   deleteJob: (id) => api.delete(`/jobs/${id}`),
   getAdminJobs: () => api.get('/jobs/admin/all'),
+  getDeletionNotifications: () => api.get('/jobs/admin/deletion-notifications'),
+  confirmDeletion: (jobIds) => api.post('/jobs/admin/confirm-deletion', { jobIds }),
+  postponeDeletion: (jobIds, days) => api.post('/jobs/admin/postpone-deletion', { jobIds, days }),
 };
 
 export default api;

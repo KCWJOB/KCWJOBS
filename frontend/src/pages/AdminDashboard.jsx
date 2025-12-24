@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jobsAPI } from '../services/api';
-import { FaPlus, FaEdit, FaTrash, FaSignOutAlt, FaEye, FaTimes } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaSignOutAlt, FaEye, FaTimes, FaExclamationTriangle, FaClock, FaCheck } from 'react-icons/fa';
 import { CATEGORY_SECTION_CONFIG, ensureSectionDefaults } from '../constants/categorySections';
 
 const AdminDashboard = () => {
   const [jobs, setJobs] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [deletionNotifications, setDeletionNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showDeletionModal, setShowDeletionModal] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [notification, setNotification] = useState('');
+  const [selectedJobsForDeletion, setSelectedJobsForDeletion] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     organization: '',
@@ -33,6 +38,7 @@ const AdminDashboard = () => {
       return;
     }
     fetchJobs();
+    fetchDeletionNotifications();
   }, [navigate]);
 
   useEffect(() => {
@@ -49,12 +55,72 @@ const AdminDashboard = () => {
   const fetchJobs = async () => {
     try {
       const response = await jobsAPI.getAdminJobs();
-      setJobs(response.data.data || []);
+      const jobsData = response.data.data || [];
+      setJobs(jobsData);
+      setFilteredJobs(jobsData); // Initially show all jobs
     } catch (error) {
       console.error('Error fetching jobs:', error);
       setJobs([]);
+      setFilteredJobs([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchDeletionNotifications = async () => {
+    try {
+      const response = await jobsAPI.getDeletionNotifications();
+      setDeletionNotifications(response.data.data || []);
+    } catch (error) {
+      console.error('Error fetching deletion notifications:', error);
+    }
+  };
+
+  const handleConfirmDeletion = async () => {
+    try {
+      await jobsAPI.confirmDeletion(selectedJobsForDeletion);
+      setNotification('✅ Selected jobs deleted successfully!');
+      fetchJobs();
+      fetchDeletionNotifications();
+      setShowDeletionModal(false);
+      setSelectedJobsForDeletion([]);
+      setTimeout(() => setNotification(''), 5000);
+    } catch (error) {
+      console.error('Error confirming deletion:', error);
+      setNotification('❌ Error deleting jobs. Please try again.');
+      setTimeout(() => setNotification(''), 5000);
+    }
+  };
+
+  const handlePostponeDeletion = async (days = 7) => {
+    try {
+      await jobsAPI.postponeDeletion(selectedJobsForDeletion, days);
+      setNotification(`✅ Deletion postponed for ${days} days!`);
+      fetchDeletionNotifications();
+      setShowDeletionModal(false);
+      setSelectedJobsForDeletion([]);
+      setTimeout(() => setNotification(''), 5000);
+    } catch (error) {
+      console.error('Error postponing deletion:', error);
+      setNotification('❌ Error postponing deletion. Please try again.');
+      setTimeout(() => setNotification(''), 5000);
+    }
+  };
+
+  const getDaysUntilDeletion = (deletionDate) => {
+    const now = new Date();
+    const deletion = new Date(deletionDate);
+    const diffTime = deletion - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
+    if (filter === 'all') {
+      setFilteredJobs(jobs);
+    } else {
+      setFilteredJobs(jobs.filter(job => job.category === filter));
     }
   };
 
@@ -258,7 +324,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="container" style={{ padding: '2rem 0', color: 'var(--color-text)' }}>
+    <div className="container" style={{ padding: '2rem 0', color: '#1f2937' }}>
       {/* Notification */}
       {notification && (
         <div style={{
@@ -290,7 +356,7 @@ const AdminDashboard = () => {
         <h1 style={{
           fontSize: '2.5rem',
           fontWeight: 'bold',
-          color: 'var(--color-text)'
+          color: '#111827'
         }}>
           Admin Dashboard
         </h1>
@@ -324,40 +390,80 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats - Now Clickable */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
         gap: '1rem',
         marginBottom: '2rem'
       }}>
-        <div className="card card-rich" style={{ textAlign: 'center' }}>
-          <h3 style={{ color: '#bfdbfe', fontSize: '2rem', marginBottom: '0.5rem' }}>
+        <button
+          onClick={() => handleFilterChange('upcoming-job')}
+          className="card card-rich"
+          style={{
+            textAlign: 'center',
+            cursor: 'pointer',
+            border: activeFilter === 'upcoming-job' ? '2px solid #3b82f6' : 'none',
+            background: activeFilter === 'upcoming-job' ? 'rgba(59, 130, 246, 0.1)' : undefined,
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <h3 style={{ color: '#3b82f6', fontSize: '2rem', marginBottom: '0.5rem' }}>
             {(jobs || []).filter(job => job.category === 'upcoming-job').length}
           </h3>
-          <p style={{ color: 'var(--color-card-muted)' }}>Upcoming Jobs</p>
-        </div>
+          <p style={{ color: '#6b7280' }}>Upcoming Jobs</p>
+        </button>
         
-        <div className="card card-rich" style={{ textAlign: 'center' }}>
-          <h3 style={{ color: '#bbf7d0', fontSize: '2rem', marginBottom: '0.5rem' }}>
+        <button
+          onClick={() => handleFilterChange('result')}
+          className="card card-rich"
+          style={{
+            textAlign: 'center',
+            cursor: 'pointer',
+            border: activeFilter === 'result' ? '2px solid #10b981' : 'none',
+            background: activeFilter === 'result' ? 'rgba(16, 185, 129, 0.1)' : undefined,
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <h3 style={{ color: '#10b981', fontSize: '2rem', marginBottom: '0.5rem' }}>
             {(jobs || []).filter(job => job.category === 'result').length}
           </h3>
-          <p style={{ color: 'var(--color-card-muted)' }}>Results</p>
-        </div>
+          <p style={{ color: '#6b7280' }}>Results</p>
+        </button>
         
-        <div className="card card-rich" style={{ textAlign: 'center' }}>
-          <h3 style={{ color: '#fecaca', fontSize: '2rem', marginBottom: '0.5rem' }}>
+        <button
+          onClick={() => handleFilterChange('admit-card')}
+          className="card card-rich"
+          style={{
+            textAlign: 'center',
+            cursor: 'pointer',
+            border: activeFilter === 'admit-card' ? '2px solid #f59e0b' : 'none',
+            background: activeFilter === 'admit-card' ? 'rgba(245, 158, 11, 0.1)' : undefined,
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <h3 style={{ color: '#f59e0b', fontSize: '2rem', marginBottom: '0.5rem' }}>
             {(jobs || []).filter(job => job.category === 'admit-card').length}
           </h3>
-          <p style={{ color: 'var(--color-card-muted)' }}>Admit Cards</p>
-        </div>
+          <p style={{ color: '#6b7280' }}>Admit Cards</p>
+        </button>
         
-        <div className="card card-rich" style={{ textAlign: 'center' }}>
-          <h3 style={{ color: '#e0e7ff', fontSize: '2rem', marginBottom: '0.5rem' }}>
+        <button
+          onClick={() => handleFilterChange('all')}
+          className="card card-rich"
+          style={{
+            textAlign: 'center',
+            cursor: 'pointer',
+            border: activeFilter === 'all' ? '2px solid #6366f1' : 'none',
+            background: activeFilter === 'all' ? 'rgba(99, 102, 241, 0.1)' : undefined,
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <h3 style={{ color: '#6366f1', fontSize: '2rem', marginBottom: '0.5rem' }}>
             {(jobs || []).length}
           </h3>
-          <p style={{ color: 'var(--color-card-muted)' }}>Total Jobs</p>
-        </div>
+          <p style={{ color: '#6b7280' }}>Total Jobs</p>
+        </button>
       </div>
 
       {/* Job Form Modal */}
@@ -720,12 +826,14 @@ const AdminDashboard = () => {
           fontSize: '1.5rem',
           fontWeight: '600',
           marginBottom: '1.5rem',
-          color: 'var(--color-card-text)'
+          color: '#111827'
         }}>
-          All Jobs ({jobs.length})
+          {activeFilter === 'all' ? 'All Jobs' : 
+           activeFilter === 'upcoming-job' ? 'Upcoming Jobs' :
+           activeFilter === 'result' ? 'Results' : 'Admit Cards'} ({filteredJobs.length})
         </h2>
 
-        {(jobs || []).length === 0 ? (
+        {(filteredJobs || []).length === 0 ? (
           <div style={{
             textAlign: 'center',
             padding: '3rem',
@@ -738,20 +846,20 @@ const AdminDashboard = () => {
             <table style={{
               width: '100%',
               borderCollapse: 'collapse',
-              color: 'var(--color-card-text)'
+              color: '#374151'
             }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>
-                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: 'var(--color-card-muted)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Title</th>
-                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: 'var(--color-card-muted)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Organization</th>
-                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: 'var(--color-card-muted)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Category</th>
-                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: 'var(--color-card-muted)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Last Date</th>
-                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: 'var(--color-card-muted)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Posts</th>
-                  <th style={{ padding: '12px', textAlign: 'center', fontWeight: '600', color: 'var(--color-card-muted)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Actions</th>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Title</th>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Organization</th>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Category</th>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Last Date</th>
+                  <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Posts</th>
+                  <th style={{ padding: '12px', textAlign: 'center', fontWeight: '600', color: '#6b7280', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {(jobs || []).map(job => (
+                {(filteredJobs || []).map(job => (
                   <tr key={job._id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
                     <td style={{ padding: '12px' }}>
                       <div style={{ fontWeight: '600', marginBottom: '2px' }}>

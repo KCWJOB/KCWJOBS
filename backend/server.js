@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { initializeAutoDelete } = require('./services/autoDelete');
 require('dotenv').config();
 
 const app = express();
@@ -17,7 +18,11 @@ app.use('/api/contact', require('./routes/contact'));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sarkari-result')
-  .then(() => console.log('MongoDB connected successfully'))
+  .then(() => {
+    console.log('MongoDB connected successfully');
+    // Initialize auto-deletion system after DB connection
+    initializeAutoDelete();
+  })
   .catch(err => console.log('MongoDB connection error:', err));
 
 const PORT = process.env.PORT || 5000;
