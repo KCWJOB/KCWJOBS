@@ -53,6 +53,12 @@
   --color-card-text: #f8fafc;
   --color-card-muted: #cbd5f5;
   --color-card-border: rgba(148, 163, 184, 0.45);
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --header-text: #0f172a;
+  --header-border: rgba(15, 23, 42, 0.08);
+  --header-pill-bg: rgba(15, 23, 42, 0.05);
+  --header-hover-bg: rgba(15, 23, 42, 0.08);
+  --header-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
 }
 
 * {
@@ -97,6 +103,12 @@ body.dark-theme {
   background-size: 400% 400%;
   animation: themeGradient 20s ease infinite;
   color: #ffffff;
+  --header-bg: rgba(4, 7, 20, 0.92);
+  --header-text: #f8fafc;
+  --header-border: rgba(148, 163, 184, 0.3);
+  --header-pill-bg: rgba(148, 163, 184, 0.12);
+  --header-hover-bg: rgba(248, 250, 252, 0.08);
+  --header-shadow: 0 18px 40px rgba(2, 6, 23, 0.65);
 }
 
 body.dark-theme .home-section {
@@ -119,6 +131,14 @@ body.dark-theme .home-subtitle {
 body * {
   transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease,
     border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.site-header {
+  background: var(--header-bg);
+  color: var(--header-text);
+  border-bottom: 1px solid var(--header-border);
+  box-shadow: var(--header-shadow);
+  backdrop-filter: blur(12px);
 }
 
 @media (prefers-reduced-motion: reduce) {

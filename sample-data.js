@@ -1,63 +1,5 @@
 const mongoose = require('mongoose');
-
-// Job Schema
-const JobSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true
-  },
-  organization: {
-    type: String,
-    required: true
-  },
-  category: {
-    type: String,
-    enum: ['result', 'admit-card', 'upcoming-job'],
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  lastDate: {
-    type: Date,
-    required: true
-  },
-  startDate: {
-    type: Date,
-    required: true
-  },
-  applicationFee: {
-    type: String,
-    required: true
-  },
-  applyLink: {
-    type: String,
-    required: true
-  },
-  eligibility: {
-    type: String,
-    required: true
-  },
-  salary: {
-    type: String,
-    required: true
-  },
-  posts: {
-    type: Number,
-    required: true
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
-
-const Job = mongoose.model('Job', JobSchema);
+const Job = require('./backend/models/Job');
 
 // Sample data
 const sampleJobs = [
@@ -71,6 +13,10 @@ const sampleJobs = [
     startDate: new Date('2024-01-15'),
     applicationFee: "₹100 (General/OBC), Free (SC/ST/Women)",
     applyLink: "https://ssc.nic.in",
+    organizationLink: "https://ssc.nic.in",
+    shortNoticeLink: "https://ssc.nic.in/SSCFileServer/PortalManagement/UploadedFiles/cgl_notice.pdf",
+    syllabusLink: "https://ssc.nic.in/SSCFileServer/PortalManagement/UploadedFiles/cgl_syllabus.pdf",
+    youtubeLink: "https://youtu.be/sampleSSC",
     eligibility: "Bachelor's degree from a recognized university. Age limit: 18-32 years (relaxation as per rules).",
     salary: "₹25,500 - ₹81,100 per month",
     posts: 17727
@@ -84,6 +30,10 @@ const sampleJobs = [
     startDate: new Date('2024-01-20'),
     applicationFee: "₹850 (General/OBC), ₹175 (SC/ST/PWD)",
     applyLink: "https://ibps.in",
+    organizationLink: "https://ibps.in",
+    shortNoticeLink: "https://ibps.in/short-notice.pdf",
+    syllabusLink: "https://ibps.in/syllabus.pdf",
+    youtubeLink: "https://youtu.be/sampleIBPS",
     eligibility: "Graduation in any discipline from a recognized university. Age limit: 20-30 years.",
     salary: "₹23,700 - ₹42,020 per month",
     posts: 4135
@@ -97,6 +47,10 @@ const sampleJobs = [
     startDate: new Date('2024-02-01'),
     applicationFee: "₹500 (General/OBC), ₹250 (SC/ST)",
     applyLink: "https://rrbcdg.gov.in",
+    organizationLink: "https://rrbcdg.gov.in",
+    shortNoticeLink: "https://rrbcdg.gov.in/groupd-notice.pdf",
+    syllabusLink: "https://rrbcdg.gov.in/groupd-syllabus.pdf",
+    youtubeLink: "https://youtu.be/sampleRRB",
     eligibility: "10th pass or ITI from recognized institute. Age limit: 18-33 years.",
     salary: "₹18,000 - ₹56,900 per month",
     posts: 103769
@@ -112,6 +66,10 @@ const sampleJobs = [
     startDate: new Date('2023-02-01'),
     applicationFee: "₹200 (General), ₹25 (SC/ST/Women)",
     applyLink: "https://upsc.gov.in",
+    organizationLink: "https://upsc.gov.in",
+    shortNoticeLink: "https://upsc.gov.in/civil-services-notice.pdf",
+    syllabusLink: "https://upsc.gov.in/civil-services-syllabus.pdf",
+    youtubeLink: "https://youtu.be/sampleUPSC",
     eligibility: "Bachelor's degree from recognized university. Age limit: 21-32 years.",
     salary: "₹56,100 - ₹2,50,000 per month",
     posts: 1105
@@ -125,6 +83,10 @@ const sampleJobs = [
     startDate: new Date('2023-10-01'),
     applicationFee: "₹750 (General/OBC), ₹125 (SC/ST/PWD)",
     applyLink: "https://sbi.co.in/careers",
+    organizationLink: "https://sbi.co.in",
+    shortNoticeLink: "https://sbi.co.in/careers/short-notice.pdf",
+    syllabusLink: "https://sbi.co.in/careers/syllabus.pdf",
+    youtubeLink: "https://youtu.be/sampleSBI",
     eligibility: "Graduation in any discipline. Age limit: 20-28 years.",
     salary: "₹17,900 - ₹63,200 per month",
     posts: 8773
@@ -140,6 +102,10 @@ const sampleJobs = [
     startDate: new Date('2023-08-24'),
     applicationFee: "₹1850 (General/OBC), ₹925 (SC/ST/PWD)",
     applyLink: "https://gate.iisc.ac.in",
+    organizationLink: "https://gate.iisc.ac.in",
+    shortNoticeLink: "https://gate.iisc.ac.in/gate-notice.pdf",
+    syllabusLink: "https://gate.iisc.ac.in/gate-syllabus.pdf",
+    youtubeLink: "https://youtu.be/sampleGATE",
     eligibility: "Bachelor's degree in Engineering/Technology or equivalent.",
     salary: "Varies based on organization",
     posts: 0
@@ -153,6 +119,10 @@ const sampleJobs = [
     startDate: new Date('2023-11-01'),
     applicationFee: "₹1000 (General/OBC), ₹500 (SC/ST/PWD)",
     applyLink: "https://jeemain.nta.nic.in",
+    organizationLink: "https://jeemain.nta.nic.in",
+    shortNoticeLink: "https://jeemain.nta.nic.in/jeemain-notice.pdf",
+    syllabusLink: "https://jeemain.nta.nic.in/jeemain-syllabus.pdf",
+    youtubeLink: "https://youtu.be/sampleJEE",
     eligibility: "12th pass or appearing with Physics, Chemistry, Mathematics.",
     salary: "Not Applicable",
     posts: 0

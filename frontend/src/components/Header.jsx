@@ -30,7 +30,7 @@ const Header = () => {
   };
 
   const navLinkStyle = {
-    color: '#1a1a1a',
+    color: 'var(--header-text)',
     textDecoration: 'none',
     display: 'flex',
     alignItems: 'center',
@@ -42,12 +42,13 @@ const Header = () => {
     fontSize: 'clamp(0.8rem, 2.5vw, 0.95rem)',
     position: 'relative',
     overflow: 'hidden',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
+    background: 'transparent'
   };
 
   const handleHover = (event, isEntering) => {
     if (isEntering) {
-      event.currentTarget.style.background = 'rgba(0, 0, 0, 0.05)';
+      event.currentTarget.style.background = 'var(--header-hover-bg)';
       event.currentTarget.style.transform = 'translateY(-3px) scale(1.05)';
     } else {
       event.currentTarget.style.background = 'transparent';
@@ -122,14 +123,12 @@ const Header = () => {
         `}
       </style>
       
-      <header className="header-animated" style={{
-        background: '#ffffff',
-        color: '#1a1a1a',
+      <header className="header-animated site-header" style={{
+        color: 'var(--header-text)',
         padding: 'clamp(0.5rem, 2vw, 1rem) 0',
         position: 'sticky',
         top: 0,
-        zIndex: 999,
-        borderBottom: '1px solid rgba(0, 0, 0, 0.1)'
+        zIndex: 999
       }}>
         <div className="container">
           <div style={{
@@ -147,14 +146,14 @@ const Header = () => {
               style={{
                 fontSize: 'clamp(1.2rem, 4vw, 1.6rem)',
                 fontWeight: 'bold',
-                color: '#1a1a1a',
+                color: 'var(--header-text)',
                 textDecoration: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 'clamp(0.4rem, 1.5vw, 0.6rem)',
                 padding: 'clamp(0.2rem, 1vw, 0.25rem) clamp(0.4rem, 1.5vw, 0.5rem)',
                 borderRadius: '12px',
-                background: 'rgba(0, 0, 0, 0.05)',
+                background: 'var(--header-pill-bg)',
                 transition: 'all 0.3s ease'
               }}>
               <img
@@ -230,7 +229,7 @@ const Header = () => {
                 onClick={toggleTheme}
                 style={{
                   ...navLinkStyle,
-                  background: 'none',
+                  background: 'transparent',
                   border: 'none',
                   cursor: 'pointer'
                 }}

@@ -32,7 +32,23 @@ const JobSchema = new mongoose.Schema({
   },
   applyLink: {
     type: String,
-    required: true
+    required: true,
+    trim: true
+  },
+  organizationLink: {
+    type: String,
+    required: false,
+    trim: true
+  },
+  shortNoticeLink: {
+    type: String,
+    required: false,
+    trim: true
+  },
+  syllabusLink: {
+    type: String,
+    required: false,
+    trim: true
   },
   eligibility: {
     type: String,
@@ -45,6 +61,11 @@ const JobSchema = new mongoose.Schema({
   posts: {
     type: Number,
     required: false
+  },
+  youtubeLink: {
+    type: String,
+    required: false,
+    trim: true
   },
   details: {
     type: mongoose.Schema.Types.Mixed,

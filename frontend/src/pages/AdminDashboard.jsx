@@ -24,6 +24,10 @@ const AdminDashboard = () => {
     startDate: '',
     applicationFee: '',
     applyLink: '',
+    organizationLink: '',
+    shortNoticeLink: '',
+    syllabusLink: '',
+    youtubeLink: '',
     eligibility: '',
     salary: '',
     posts: '',
@@ -218,12 +222,16 @@ const AdminDashboard = () => {
       category: job.category,
       description: job.description,
       lastDate: job.lastDate.split('T')[0],
-      startDate: job.startDate.split('T')[0],
+      startDate: job.startDate ? job.startDate.split('T')[0] : '',
       applicationFee: job.applicationFee,
       applyLink: job.applyLink,
+      organizationLink: job.organizationLink || '',
+      shortNoticeLink: job.shortNoticeLink || '',
+      syllabusLink: job.syllabusLink || '',
+      youtubeLink: job.youtubeLink || '',
       eligibility: job.eligibility,
-      salary: job.salary,
-      posts: job.posts,
+      salary: job.salary || '',
+      posts: job.posts || '',
       details: ensureSectionDefaults(job.category, job.details || {})
     });
     setShowForm(true);
@@ -254,6 +262,10 @@ const AdminDashboard = () => {
       startDate: '',
       applicationFee: '',
       applyLink: '',
+      organizationLink: '',
+      shortNoticeLink: '',
+      syllabusLink: '',
+      youtubeLink: '',
       eligibility: '',
       salary: '',
       posts: '',
@@ -728,6 +740,64 @@ const AdminDashboard = () => {
                     placeholder="https://example.com/apply"
                     style={inputStyle}
                   />
+                </div>
+                <div style={{
+                  marginTop: '1rem',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: '1rem'
+                }}>
+                  <div>
+                    <label style={labelStyle}>Official Website Link</label>
+                    <input
+                      type="url"
+                      name="organizationLink"
+                      value={formData.organizationLink}
+                      onChange={handleChange}
+                      placeholder="https://department.gov.in"
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Short Notice Link</label>
+                    <input
+                      type="url"
+                      name="shortNoticeLink"
+                      value={formData.shortNoticeLink}
+                      onChange={handleChange}
+                      placeholder="https://example.com/short-notice.pdf"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+                <div style={{
+                  marginTop: '1rem',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: '1rem'
+                }}>
+                  <div>
+                    <label style={labelStyle}>Syllabus / Notification Link</label>
+                    <input
+                      type="url"
+                      name="syllabusLink"
+                      value={formData.syllabusLink}
+                      onChange={handleChange}
+                      placeholder="https://example.com/syllabus.pdf"
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>YouTube Video Link</label>
+                    <input
+                      type="url"
+                      name="youtubeLink"
+                      value={formData.youtubeLink}
+                      onChange={handleChange}
+                      placeholder="https://youtu.be/abcd1234"
+                      style={inputStyle}
+                    />
+                  </div>
                 </div>
               </section>
 

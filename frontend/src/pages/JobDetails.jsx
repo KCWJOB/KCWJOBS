@@ -53,6 +53,33 @@ const JobDetails = () => {
     }
   };
 
+  const extractYouTubeId = (url) => {
+    if (!url) return null;
+    try {
+      const parsedUrl = new URL(url);
+      if (parsedUrl.hostname === 'youtu.be') {
+        return parsedUrl.pathname.replace('/', '');
+      }
+
+      if (parsedUrl.searchParams.has('v')) {
+        return parsedUrl.searchParams.get('v');
+      }
+
+      const segments = parsedUrl.pathname.split('/').filter(Boolean);
+      const embedIndex = segments.findIndex((segment) => segment === 'embed');
+      if (embedIndex !== -1 && segments[embedIndex + 1]) {
+        return segments[embedIndex + 1];
+      }
+
+      return segments.pop();
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const youtubeThumbnailId = job?.youtubeLink ? extractYouTubeId(job.youtubeLink) : null;
+  const youtubeThumbnailUrl = youtubeThumbnailId ? `https://img.youtube.com/vi/${youtubeThumbnailId}/hqdefault.jpg` : null;
+
   if (loading) {
     return (
       <div className="job-details-page job-details__loading" role="status" aria-live="polite">
@@ -75,6 +102,29 @@ const JobDetails = () => {
   }
 
   const detailSections = CATEGORY_SECTION_CONFIG[job.category] || [];
+  const importantLinkItems = [
+    {
+      key: 'primary-action',
+      label: getActionButtonText(job.category),
+      href: job.applyLink,
+      variant: 'primary'
+    },
+    job.organizationLink && {
+      key: 'official-site',
+      label: 'Official Site',
+      href: job.organizationLink
+    },
+    job.shortNoticeLink && {
+      key: 'short-notice',
+      label: 'Short Notice',
+      href: job.shortNoticeLink
+    },
+    job.syllabusLink && {
+      key: 'syllabus',
+      label: 'Syllabus / Notification',
+      href: job.syllabusLink
+    }
+  ].filter(Boolean);
 
   return (
     <div className="job-details-page">
@@ -209,60 +259,47 @@ const JobDetails = () => {
           </div>
         </section>
 
-        <section className="important-links">
-          <header className="important-links__header">
-            <h3 className="important-links__title">Some useful important links</h3>
-            <p className="important-links__meta">Quick actions and official resources for this vacancy</p>
-          </header>
-
-          <div className="job-actions" role="group" aria-label="Important job actions">
-            <a
-              className="job-action job-action--primary"
-              href={job.applyLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${getActionButtonText(job.category)} - ${job.organization}`}
-            >
-              <span className="job-action__label">{getActionButtonText(job.category)}</span>
-              <span className="job-action__icon" aria-hidden="true">↗</span>
-            </a>
-
-            <a
-              className="job-action job-action--secondary"
-              href={job.organizationLink || job.applyLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="job-action__label">Official Website</span>
-              <span className="job-action__icon" aria-hidden="true">↗</span>
-            </a>
-
-            <a
-              className="job-action job-action--secondary"
-              href={job.shortNoticeLink || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="job-action__label">Check Short Notice</span>
-              <span className="job-action__icon" aria-hidden="true">↗</span>
-            </a>
-
-            <a
-              className="job-action job-action--secondary"
-              href={job.syllabusLink || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span className="job-action__label">Download Syllabus / Notification</span>
-              <span className="job-action__icon" aria-hidden="true">↗</span>
-            </a>
+        <section className="important-links" aria-label="Important resources">
+          <div className="important-links__banner">
+            <span>Important Link</span>
           </div>
 
-          <div className="important-links__footer">
-            <small>
-              Always verify details on the official website before applying. (Last date:{' '}
-              <span className="job-details__deadline">{formatDate(job.lastDate)}</span>)
-            </small>
+          <div className="important-links__panel">
+            <div className="important-links__video" aria-live="polite">
+              {youtubeThumbnailUrl ? (
+                <>
+                  <img src={youtubeThumbnailUrl} alt="YouTube preview for this vacancy" />
+                  <a
+                    href={job.youtubeLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="important-links__video-cta"
+                  >
+                    Watch Video ↗
+                  </a>
+                </>
+              ) : (
+                <p className="important-links__video-placeholder">
+                  youtube video thumbnail will show here from youtube link
+                </p>
+              )}
+            </div>
+
+            <div className="important-links__list" role="group" aria-label="Application actions">
+              {importantLinkItems.map((item) => (
+                <a
+                  key={item.key}
+                  className={`important-links__item${item.variant === 'primary' ? ' important-links__item--primary' : ''}`}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${item.label} - ${job.organization}`}
+                >
+                  <span>{item.label}</span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              ))}
+            </div>
           </div>
         </section>
       </div>
