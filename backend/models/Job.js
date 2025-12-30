@@ -11,7 +11,7 @@ const JobSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['result', 'admit-card', 'upcoming-job'],
+    enum: ['result', 'admit-card', 'upcoming-job', 'scholarship', 'admission'],
     required: true
   },
   description: {

@@ -1,8 +1,38 @@
+import { useState, useEffect } from 'react';
 import { FaYoutube, FaPlay } from 'react-icons/fa';
+import { youtubeAPI } from '../services/api';
 
 const YouTubeSection = () => {
-  const channelUrl = 'https://www.youtube.com/watch?v=3CkgSQWwNlk'; // Replace with your actual channel URL
-  const thumbnailUrl = 'https://i.ytimg.com/vi/T55Kb8rrH1g/hqdefault.jpg?sqp=-oaymwEXCOADEI4CSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLDXmIIdZ92kYcdh0KLH0apV0UKG8w'; // Replace with your channel thumbnail
+  const [youtubeData, setYoutubeData] = useState({
+    channelUrl: 'https://www.youtube.com/watch?v=3CkgSQWwNlk'
+  });
+
+  const getVideoId = (url) => {
+    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+    return match ? match[1] : null;
+  };
+
+  const getThumbnailUrl = (videoUrl) => {
+    const videoId = getVideoId(videoUrl);
+    return videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : 'https://i.ytimg.com/vi/T55Kb8rrH1g/hqdefault.jpg';
+  };
+
+  useEffect(() => {
+    fetchYouTubeData();
+  }, []);
+
+  const fetchYouTubeData = async () => {
+    try {
+      const response = await youtubeAPI.getYouTubeUpdate();
+      if (response.data.success && response.data.data) {
+        setYoutubeData({
+          channelUrl: response.data.data.channelUrl
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching YouTube data:', error);
+    }
+  };
 
   return (
     <section style={{
@@ -60,16 +90,18 @@ const YouTubeSection = () => {
             cursor: 'pointer',
             transition: 'transform 0.3s ease'
           }}
-          onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-          onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-          onClick={() => window.open(channelUrl, '_blank')}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          onClick={() => window.open(youtubeData.channelUrl, '_blank')}
           >
             <img 
-              src={thumbnailUrl}
+              key={youtubeData.channelUrl}
+              src={getThumbnailUrl(youtubeData.channelUrl)}
               alt="YouTube Channel"
               style={{
                 width: '100%',
-                height: 'auto',
+                height: '280px',
+                objectFit: 'cover',
                 display: 'block'
               }}
             />
@@ -93,7 +125,7 @@ const YouTubeSection = () => {
 
           {/* Visit Channel Button */}
           <a
-            href={channelUrl}
+            href={youtubeData.channelUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-primary"

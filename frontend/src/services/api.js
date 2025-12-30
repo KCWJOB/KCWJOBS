@@ -32,4 +32,9 @@ export const jobsAPI = {
   postponeDeletion: (jobIds, days) => api.post('/jobs/admin/postpone-deletion', { jobIds, days }),
 };
 
+export const youtubeAPI = {
+  getYouTubeUpdate: () => api.get('/youtube'),
+  updateYouTube: (data) => api.post('/youtube', data),
+};
+
 export default api;

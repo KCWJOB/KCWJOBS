@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { jobsAPI } from '../services/api';
-import { FaPlus, FaEdit, FaTrash, FaSignOutAlt, FaEye, FaTimes, FaExclamationTriangle, FaClock, FaCheck } from 'react-icons/fa';
+import { jobsAPI, youtubeAPI } from '../services/api';
+import { FaPlus, FaEdit, FaTrash, FaSignOutAlt, FaEye, FaTimes, FaExclamationTriangle, FaClock, FaCheck, FaYoutube } from 'react-icons/fa';
 import { CATEGORY_SECTION_CONFIG, ensureSectionDefaults } from '../constants/categorySections';
 
 const AdminDashboard = () => {
@@ -12,9 +12,13 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [showDeletionModal, setShowDeletionModal] = useState(false);
+  const [showYouTubeForm, setShowYouTubeForm] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [notification, setNotification] = useState('');
   const [selectedJobsForDeletion, setSelectedJobsForDeletion] = useState([]);
+  const [youtubeData, setYoutubeData] = useState({
+    channelUrl: ''
+  });
   const [formData, setFormData] = useState({
     title: '',
     organization: '',
@@ -43,6 +47,7 @@ const AdminDashboard = () => {
     }
     fetchJobs();
     fetchDeletionNotifications();
+    fetchYouTubeData();
   }, [navigate]);
 
   useEffect(() => {
@@ -77,6 +82,17 @@ const AdminDashboard = () => {
       setDeletionNotifications(response.data.data || []);
     } catch (error) {
       console.error('Error fetching deletion notifications:', error);
+    }
+  };
+
+  const fetchYouTubeData = async () => {
+    try {
+      const response = await youtubeAPI.getYouTubeUpdate();
+      if (response.data.success && response.data.data) {
+        setYoutubeData(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching YouTube data:', error);
     }
   };
 
@@ -185,6 +201,14 @@ const AdminDashboard = () => {
       }
     }
     
+    if (formData.category === 'scholarship' || formData.category === 'admission') {
+      if (!formData.startDate) {
+        setNotification('❌ Please fill start date for ' + formData.category + '.');
+        setTimeout(() => setNotification(''), 5000);
+        return;
+      }
+    }
+    
     try {
       const submitData = { ...formData };
       
@@ -275,6 +299,27 @@ const AdminDashboard = () => {
     setShowForm(false);
   };
 
+  const handleYouTubeSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!youtubeData.channelUrl) {
+      setNotification('❌ Please fill YouTube Video URL.');
+      setTimeout(() => setNotification(''), 5000);
+      return;
+    }
+    
+    try {
+      await youtubeAPI.updateYouTube(youtubeData);
+      setNotification('✅ YouTube channel updated successfully!');
+      setShowYouTubeForm(false);
+      setTimeout(() => setNotification(''), 5000);
+    } catch (error) {
+      console.error('Error updating YouTube data:', error);
+      setNotification('❌ Error updating YouTube data. Please try again.');
+      setTimeout(() => setNotification(''), 5000);
+    }
+  };
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-IN');
   };
@@ -287,6 +332,10 @@ const AdminDashboard = () => {
         return 'Admit Card';
       case 'upcoming-job':
         return 'Job Opening';
+      case 'scholarship':
+        return 'Scholarship';
+      case 'admission':
+        return 'Admission';
       default:
         return category;
     }
@@ -388,6 +437,26 @@ const AdminDashboard = () => {
           </button>
           
           <button
+            onClick={() => setShowYouTubeForm(true)}
+            className="btn"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              background: '#ff0000',
+              color: 'white',
+              border: 'none',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer'
+            }}
+          >
+            <FaYoutube />
+            YT Update
+          </button>
+          
+          <button
             onClick={handleLogout}
             className="btn btn-secondary"
             style={{
@@ -458,6 +527,40 @@ const AdminDashboard = () => {
             {(jobs || []).filter(job => job.category === 'admit-card').length}
           </h3>
           <p style={{ color: '#6b7280' }}>Admit Cards</p>
+        </button>
+        
+        <button
+          onClick={() => handleFilterChange('scholarship')}
+          className="card card-rich"
+          style={{
+            textAlign: 'center',
+            cursor: 'pointer',
+            border: activeFilter === 'scholarship' ? '2px solid #8b5cf6' : 'none',
+            background: activeFilter === 'scholarship' ? 'rgba(139, 92, 246, 0.1)' : undefined,
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <h3 style={{ color: '#8b5cf6', fontSize: '2rem', marginBottom: '0.5rem' }}>
+            {(jobs || []).filter(job => job.category === 'scholarship').length}
+          </h3>
+          <p style={{ color: '#6b7280' }}>Scholarships</p>
+        </button>
+        
+        <button
+          onClick={() => handleFilterChange('admission')}
+          className="card card-rich"
+          style={{
+            textAlign: 'center',
+            cursor: 'pointer',
+            border: activeFilter === 'admission' ? '2px solid #06b6d4' : 'none',
+            background: activeFilter === 'admission' ? 'rgba(6, 182, 212, 0.1)' : undefined,
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <h3 style={{ color: '#06b6d4', fontSize: '2rem', marginBottom: '0.5rem' }}>
+            {(jobs || []).filter(job => job.category === 'admission').length}
+          </h3>
+          <p style={{ color: '#6b7280' }}>Admissions</p>
         </button>
         
         <button
@@ -624,6 +727,8 @@ const AdminDashboard = () => {
                       <option value="upcoming-job">Upcoming Job</option>
                       <option value="result">Result</option>
                       <option value="admit-card">Admit Card</option>
+                      <option value="scholarship">Scholarship</option>
+                      <option value="admission">Admission</option>
                     </select>
                   </div>
                   {formData.category === 'upcoming-job' && (
@@ -653,9 +758,23 @@ const AdminDashboard = () => {
                       />
                     </div>
                   )}
+                  {(formData.category === 'scholarship' || formData.category === 'admission') && (
+                    <div>
+                      <label style={labelStyle}>Start Date *</label>
+                      <input
+                        type="date"
+                        name="startDate"
+                        value={formData.startDate}
+                        onChange={handleChange}
+                        required
+                        style={inputStyle}
+                      />
+                    </div>
+                  )}
                   <div>
                     <label style={labelStyle}>
-                      {formData.category === 'result' || formData.category === 'admit-card' ? 'Post Date *' : 'Last Date *'}
+                      {(formData.category === 'scholarship' || formData.category === 'admission') ? 'End Date *' :
+                       formData.category === 'result' || formData.category === 'admit-card' ? 'Post Date *' : 'Last Date *'}
                     </label>
                     <input
                       type="date"
@@ -900,7 +1019,10 @@ const AdminDashboard = () => {
         }}>
           {activeFilter === 'all' ? 'All Jobs' : 
            activeFilter === 'upcoming-job' ? 'Upcoming Jobs' :
-           activeFilter === 'result' ? 'Results' : 'Admit Cards'} ({filteredJobs.length})
+           activeFilter === 'result' ? 'Results' : 
+           activeFilter === 'admit-card' ? 'Admit Cards' :
+           activeFilter === 'scholarship' ? 'Scholarships' :
+           activeFilter === 'admission' ? 'Admissions' : 'Jobs'} ({filteredJobs.length})
         </h2>
 
         {(filteredJobs || []).length === 0 ? (
@@ -947,9 +1069,13 @@ const AdminDashboard = () => {
                         fontSize: '0.75rem',
                         fontWeight: '500',
                         background: job.category === 'result' ? 'rgba(16, 185, 129, 0.2)' : 
-                                   job.category === 'admit-card' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(248, 113, 113, 0.2)',
+                                   job.category === 'admit-card' ? 'rgba(59, 130, 246, 0.2)' : 
+                                   job.category === 'scholarship' ? 'rgba(139, 92, 246, 0.2)' :
+                                   job.category === 'admission' ? 'rgba(6, 182, 212, 0.2)' : 'rgba(248, 113, 113, 0.2)',
                         color: job.category === 'result' ? '#86efac' : 
-                               job.category === 'admit-card' ? '#93c5fd' : '#fecaca'
+                               job.category === 'admit-card' ? '#93c5fd' : 
+                               job.category === 'scholarship' ? '#c4b5fd' :
+                               job.category === 'admission' ? '#67e8f9' : '#fecaca'
                       }}>
                         {getCategoryLabel(job.category)}
                       </span>
@@ -1009,6 +1135,169 @@ const AdminDashboard = () => {
           </div>
         )}
       </div>
+
+      {/* YouTube Update Form Modal */}
+      {showYouTubeForm && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '1.5rem',
+            background: 'rgba(2, 6, 23, 0.75)',
+            backdropFilter: 'blur(18px)',
+            zIndex: 1200
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            style={{
+              width: 'min(600px, 95vw)',
+              borderRadius: '32px',
+              background: 'linear-gradient(145deg, #0f172a 0%, #101c32 100%)',
+              border: '1px solid rgba(148, 163, 184, 0.35)',
+              boxShadow: '0 60px 140px rgba(2, 6, 23, 0.65)',
+              overflow: 'hidden'
+            }}
+          >
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              padding: '2rem 2rem 1.25rem'
+            }}>
+              <div>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  padding: '0.35rem 0.85rem',
+                  borderRadius: '999px',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  background: 'rgba(255, 0, 0, 0.2)',
+                  color: '#ff6b6b',
+                  border: '1px solid rgba(255, 0, 0, 0.3)'
+                }}>
+                  <FaYoutube />
+                  YouTube Channel
+                </span>
+                <h2 style={{
+                  fontSize: '2rem',
+                  fontWeight: 700,
+                  marginTop: '0.75rem',
+                  color: '#fff'
+                }}>
+                  Update YouTube Channel
+                </h2>
+                <p style={{ color: '#cbd5f5', marginTop: '0.35rem' }}>
+                  Update the YouTube channel URL and thumbnail that appears on the homepage.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowYouTubeForm(false)}
+                aria-label="Close YouTube form"
+                style={{
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: '#fff',
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            <form
+              onSubmit={handleYouTubeSubmit}
+              style={{
+                padding: '0 2rem 2.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1.5rem'
+              }}
+            >
+              <section style={{
+                background: 'rgba(248, 250, 252, 0.9)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '20px',
+                padding: '1.25rem',
+                boxShadow: '0 22px 45px rgba(15, 23, 42, 0.12)'
+              }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>YouTube Video Information</h3>
+                <div style={{ display: 'grid', gap: '1rem' }}>
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      marginBottom: '0.45rem',
+                      fontWeight: '600',
+                      color: 'var(--color-text)'
+                    }}>YouTube Video URL *</label>
+                    <input
+                      type="url"
+                      value={youtubeData.channelUrl}
+                      onChange={(e) => setYoutubeData(prev => ({ ...prev, channelUrl: e.target.value }))}
+                      required
+                      placeholder="https://www.youtube.com/watch?v=..."
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: '12px',
+                        background: '#fff',
+                        fontSize: '0.95rem'
+                      }}
+                    />
+                  </div>
+                </div>
+              </section>
+
+              <div style={{
+                display: 'flex',
+                gap: '1rem',
+                justifyContent: 'flex-end'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setShowYouTubeForm(false)}
+                  className="btn btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn"
+                  style={{
+                    minWidth: '160px',
+                    background: '#ff0000',
+                    color: 'white',
+                    border: 'none',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '8px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Update YouTube
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

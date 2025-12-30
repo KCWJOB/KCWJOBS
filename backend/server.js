@@ -15,6 +15,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/jobs', require('./routes/jobs'));
 app.use('/api/contact', require('./routes/contact'));
+app.use('/api/youtube', require('./routes/youtube'));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sarkari-result')

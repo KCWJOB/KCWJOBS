@@ -89,6 +89,26 @@ const Footer = () => {
                   Admit Cards
                 </a>
               </li>
+              <li style={{ marginBottom: '0.5rem' }}>
+                <a href="/category/scholarship" style={{ 
+                  color: '#d1d5db', 
+                  textDecoration: 'none',
+                  transition: 'color 0.3s ease',
+                  display: 'inline-block'
+                }} onMouseEnter={(e) => e.target.style.color = '#93c5fd'} onMouseLeave={(e) => e.target.style.color = '#d1d5db'}>
+                  Scholarships
+                </a>
+              </li>
+              <li style={{ marginBottom: '0.5rem' }}>
+                <a href="/category/admission" style={{ 
+                  color: '#d1d5db', 
+                  textDecoration: 'none',
+                  transition: 'color 0.3s ease',
+                  display: 'inline-block'
+                }} onMouseEnter={(e) => e.target.style.color = '#93c5fd'} onMouseLeave={(e) => e.target.style.color = '#d1d5db'}>
+                  Admissions
+                </a>
+              </li>
             </ul>
           </div>
           

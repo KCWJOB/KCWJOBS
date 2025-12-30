@@ -1,0 +1,373 @@
+const mongoose = require('mongoose');
+const Job = require('./models/Job');
+
+const sampleJobs = [
+  // Upcoming Jobs (20)
+  {
+    title: "SSC CGL 2024 - Combined Graduate Level Examination",
+    organization: "Staff Selection Commission",
+    category: "upcoming-job",
+    description: "Staff Selection Commission (SSC) has released notification for Combined Graduate Level Examination (CGL) 2024.",
+    lastDate: new Date('2024-02-15'),
+    startDate: new Date('2024-01-15'),
+    applicationFee: "₹100 (General/OBC), Free (SC/ST/Women)",
+    applyLink: "https://ssc.nic.in",
+    eligibility: "Bachelor's degree from a recognized university. Age limit: 18-32 years.",
+    salary: "₹25,500 - ₹81,100 per month",
+    posts: 17727
+  },
+  {
+    title: "IBPS PO 2024 - Probationary Officer Recruitment",
+    organization: "Institute of Banking Personnel Selection",
+    category: "upcoming-job",
+    description: "IBPS has announced recruitment for Probationary Officer posts in various banks.",
+    lastDate: new Date('2024-02-20'),
+    startDate: new Date('2024-01-20'),
+    applicationFee: "₹850 (General/OBC), ₹175 (SC/ST/PWD)",
+    applyLink: "https://ibps.in",
+    eligibility: "Bachelor's degree in any discipline. Age limit: 20-30 years.",
+    salary: "₹23,700 - ₹42,020 per month",
+    posts: 4135
+  },
+
+  // Results (5)
+  {
+    title: "UPSC Civil Services 2023 - Final Result Declared",
+    organization: "Union Public Service Commission",
+    category: "result",
+    description: "UPSC has declared the final result of Civil Services Examination 2023.",
+    lastDate: new Date('2024-01-30'),
+    startDate: new Date('2023-02-01'),
+    applicationFee: "₹200 (General), ₹25 (SC/ST/Women)",
+    applyLink: "https://upsc.gov.in",
+    eligibility: "Bachelor's degree from recognized university. Age limit: 21-32 years.",
+    salary: "₹56,100 - ₹2,50,000 per month",
+    posts: 1105
+  },
+  {
+    title: "SSC CGL 2023 - Tier 2 Result Published",
+    organization: "Staff Selection Commission",
+    category: "result",
+    description: "SSC has published the result of CGL Tier 2 examination 2023.",
+    lastDate: new Date('2024-01-25'),
+    startDate: new Date('2023-06-01'),
+    applicationFee: "₹100 (General/OBC), Free (SC/ST/Women)",
+    applyLink: "https://ssc.nic.in",
+    eligibility: "Bachelor's degree from a recognized university.",
+    salary: "₹25,500 - ₹81,100 per month",
+    posts: 17727
+  },
+
+  // Admit Cards (5)
+  {
+    title: "GATE 2024 - Admit Card Available for Download",
+    organization: "Indian Institute of Science",
+    category: "admit-card",
+    description: "Graduate Aptitude Test in Engineering (GATE) 2024 admit cards are now available.",
+    lastDate: new Date('2024-02-04'),
+    startDate: new Date('2023-08-24'),
+    applicationFee: "₹1850 (General/OBC), ₹925 (SC/ST/PWD)",
+    applyLink: "https://gate.iisc.ac.in",
+    eligibility: "Bachelor's degree in Engineering/Technology or equivalent.",
+    salary: "Varies based on organization",
+    posts: 0
+  },
+  {
+    title: "JEE Main 2024 - Hall Ticket Released",
+    organization: "National Testing Agency",
+    category: "admit-card",
+    description: "NTA has released the admit card for JEE Main 2024 examination.",
+    lastDate: new Date('2024-01-31'),
+    startDate: new Date('2023-11-01'),
+    applicationFee: "₹1000 (General/OBC), ₹500 (SC/ST/PWD)",
+    applyLink: "https://jeemain.nta.nic.in",
+    eligibility: "12th Pass or appearing in relevant subjects.",
+    salary: "Not applicable",
+    posts: 0
+  },
+
+  // Scholarships (10)
+  {
+    title: "National Merit Scholarship 2024 - For Undergraduate Students",
+    organization: "Ministry of Education",
+    category: "scholarship",
+    description: "Merit-based scholarship for undergraduate students pursuing various courses.",
+    lastDate: new Date('2024-03-15'),
+    startDate: new Date('2024-02-01'),
+    applicationFee: "Free",
+    applyLink: "https://scholarships.gov.in",
+    eligibility: "12th pass with minimum 75% marks. Family income below ₹6 lakh per annum.",
+    salary: "₹50,000 per year",
+    posts: 5000
+  },
+  {
+    title: "Post Matric Scholarship 2024 - SC/ST Students",
+    organization: "Ministry of Social Justice",
+    category: "scholarship",
+    description: "Financial assistance for SC/ST students pursuing higher education.",
+    lastDate: new Date('2024-04-30'),
+    startDate: new Date('2024-03-01'),
+    applicationFee: "Free",
+    applyLink: "https://scholarships.gov.in",
+    eligibility: "SC/ST students pursuing post-matric courses. Family income below ₹2.5 lakh.",
+    salary: "₹35,000 per year",
+    posts: 10000
+  },
+  {
+    title: "INSPIRE Scholarship 2024 - Science Students",
+    organization: "Department of Science & Technology",
+    category: "scholarship",
+    description: "Scholarship for students pursuing natural and basic sciences.",
+    lastDate: new Date('2024-02-28'),
+    startDate: new Date('2024-01-15'),
+    applicationFee: "Free",
+    applyLink: "https://online-inspire.gov.in",
+    eligibility: "Students pursuing BSc/MSc in natural sciences with good academic record.",
+    salary: "₹80,000 per year",
+    posts: 1000
+  },
+  {
+    title: "Minority Scholarship 2024 - Educational Support",
+    organization: "Ministry of Minority Affairs",
+    category: "scholarship",
+    description: "Financial assistance for students from minority communities.",
+    lastDate: new Date('2024-05-15'),
+    startDate: new Date('2024-04-01'),
+    applicationFee: "Free",
+    applyLink: "https://scholarships.gov.in",
+    eligibility: "Students from minority communities. Family income below ₹8 lakh per annum.",
+    salary: "₹40,000 per year",
+    posts: 3000
+  },
+  {
+    title: "Girl Child Education Scholarship 2024",
+    organization: "Ministry of Women & Child Development",
+    category: "scholarship",
+    description: "Special scholarship scheme for girl students to promote education.",
+    lastDate: new Date('2024-03-31'),
+    startDate: new Date('2024-02-15'),
+    applicationFee: "Free",
+    applyLink: "https://scholarships.gov.in",
+    eligibility: "Girl students pursuing graduation/post-graduation. Merit-based selection.",
+    salary: "₹60,000 per year",
+    posts: 2500
+  },
+  {
+    title: "Research Fellowship 2024 - PhD Students",
+    organization: "University Grants Commission",
+    category: "scholarship",
+    description: "Fellowship for PhD students in various disciplines.",
+    lastDate: new Date('2024-04-15'),
+    startDate: new Date('2024-03-15'),
+    applicationFee: "₹500",
+    applyLink: "https://ugcnet.nta.nic.in",
+    eligibility: "Students pursuing PhD with NET/GATE qualification.",
+    salary: "₹31,000 per month",
+    posts: 800
+  },
+  {
+    title: "Technical Education Scholarship 2024",
+    organization: "All India Council for Technical Education",
+    category: "scholarship",
+    description: "Scholarship for students pursuing technical education courses.",
+    lastDate: new Date('2024-05-31'),
+    startDate: new Date('2024-04-15'),
+    applicationFee: "₹200",
+    applyLink: "https://aicte-india.org",
+    eligibility: "Students in engineering/technical courses with good academic performance.",
+    salary: "₹45,000 per year",
+    posts: 1500
+  },
+  {
+    title: "State Merit Scholarship 2024 - Maharashtra",
+    organization: "Government of Maharashtra",
+    category: "scholarship",
+    description: "Merit-based scholarship for students from Maharashtra state.",
+    lastDate: new Date('2024-06-30'),
+    startDate: new Date('2024-05-01'),
+    applicationFee: "Free",
+    applyLink: "https://mahadbt.maharashtra.gov.in",
+    eligibility: "Maharashtra domicile students with excellent academic record.",
+    salary: "₹25,000 per year",
+    posts: 5000
+  },
+  {
+    title: "Sports Scholarship 2024 - Talented Athletes",
+    organization: "Ministry of Youth Affairs & Sports",
+    category: "scholarship",
+    description: "Financial support for talented sports persons pursuing education.",
+    lastDate: new Date('2024-07-15'),
+    startDate: new Date('2024-06-01'),
+    applicationFee: "Free",
+    applyLink: "https://scholarships.gov.in",
+    eligibility: "Students with proven sports achievements at state/national level.",
+    salary: "₹70,000 per year",
+    posts: 500
+  },
+  {
+    title: "Overseas Education Scholarship 2024",
+    organization: "Ministry of External Affairs",
+    category: "scholarship",
+    description: "Scholarship for Indian students pursuing higher education abroad.",
+    lastDate: new Date('2024-08-31'),
+    startDate: new Date('2024-07-01'),
+    applicationFee: "₹1000",
+    applyLink: "https://mea.gov.in",
+    eligibility: "Indian citizens with admission to recognized foreign universities.",
+    salary: "₹5,00,000 per year",
+    posts: 100
+  },
+
+  // Admissions (10)
+  {
+    title: "Delhi University Admission 2024 - Undergraduate Courses",
+    organization: "University of Delhi",
+    category: "admission",
+    description: "Admission to various undergraduate courses in Delhi University.",
+    lastDate: new Date('2024-07-31'),
+    startDate: new Date('2024-05-15'),
+    applicationFee: "₹250 (General), ₹100 (SC/ST)",
+    applyLink: "https://du.ac.in",
+    eligibility: "12th pass with minimum required percentage as per course.",
+    salary: "Course Fee: ₹15,000 - ₹50,000 per year",
+    posts: 62000
+  },
+  {
+    title: "JNU Admission 2024 - Postgraduate Programs",
+    organization: "Jawaharlal Nehru University",
+    category: "admission",
+    description: "Admission to various postgraduate and research programs in JNU.",
+    lastDate: new Date('2024-05-30'),
+    startDate: new Date('2024-03-01'),
+    applicationFee: "₹300 (General), ₹150 (SC/ST/PWD)",
+    applyLink: "https://jnu.ac.in",
+    eligibility: "Bachelor's degree with minimum 50% marks (45% for SC/ST).",
+    salary: "Course Fee: ₹5,000 - ₹25,000 per year",
+    posts: 2500
+  },
+  {
+    title: "IIT Admission 2024 - BTech Programs",
+    organization: "Indian Institute of Technology",
+    category: "admission",
+    description: "Admission to BTech programs in various IITs through JEE Advanced.",
+    lastDate: new Date('2024-06-15'),
+    startDate: new Date('2024-04-01'),
+    applicationFee: "₹2800 (General), ₹1400 (SC/ST/PWD)",
+    applyLink: "https://jeeadv.ac.in",
+    eligibility: "JEE Main qualified candidates with top ranks.",
+    salary: "Course Fee: ₹2,00,000 per year",
+    posts: 17000
+  },
+  {
+    title: "AIIMS Admission 2024 - MBBS Course",
+    organization: "All India Institute of Medical Sciences",
+    category: "admission",
+    description: "Admission to MBBS course in AIIMS through NEET UG.",
+    lastDate: new Date('2024-05-07'),
+    startDate: new Date('2024-02-09'),
+    applicationFee: "₹1700 (General), ₹1000 (SC/ST/PWD)",
+    applyLink: "https://aiimsexams.ac.in",
+    eligibility: "NEET UG qualified with top ranks.",
+    salary: "Course Fee: ₹5,856 per year",
+    posts: 1207
+  },
+  {
+    title: "BHU Admission 2024 - Various Courses",
+    organization: "Banaras Hindu University",
+    category: "admission",
+    description: "Admission to undergraduate and postgraduate courses in BHU.",
+    lastDate: new Date('2024-06-30'),
+    startDate: new Date('2024-04-15'),
+    applicationFee: "₹300 (General), ₹150 (SC/ST)",
+    applyLink: "https://bhu.ac.in",
+    eligibility: "As per course requirements with entrance test.",
+    salary: "Course Fee: ₹10,000 - ₹75,000 per year",
+    posts: 15000
+  },
+  {
+    title: "AMU Admission 2024 - Undergraduate Programs",
+    organization: "Aligarh Muslim University",
+    category: "admission",
+    description: "Admission to various undergraduate programs in AMU.",
+    lastDate: new Date('2024-07-15'),
+    startDate: new Date('2024-05-01'),
+    applicationFee: "₹300 (General), ₹150 (SC/ST)",
+    applyLink: "https://amucontrollerexams.com",
+    eligibility: "12th pass with entrance test qualification.",
+    salary: "Course Fee: ₹8,000 - ₹40,000 per year",
+    posts: 8000
+  },
+  {
+    title: "Jamia Millia Islamia Admission 2024",
+    organization: "Jamia Millia Islamia",
+    category: "admission",
+    description: "Admission to various undergraduate and postgraduate courses.",
+    lastDate: new Date('2024-06-20'),
+    startDate: new Date('2024-04-10'),
+    applicationFee: "₹1000 (General), ₹500 (SC/ST/PWD)",
+    applyLink: "https://jmi.ac.in",
+    eligibility: "As per course requirements with entrance test.",
+    salary: "Course Fee: ₹12,000 - ₹60,000 per year",
+    posts: 5000
+  },
+  {
+    title: "IGNOU Admission 2024 - Distance Learning",
+    organization: "Indira Gandhi National Open University",
+    category: "admission",
+    description: "Admission to various distance learning programs.",
+    lastDate: new Date('2024-08-31'),
+    startDate: new Date('2024-06-01'),
+    applicationFee: "₹300 (All categories)",
+    applyLink: "https://ignou.ac.in",
+    eligibility: "As per program requirements - flexible eligibility.",
+    salary: "Course Fee: ₹3,000 - ₹25,000 per year",
+    posts: 100000
+  },
+  {
+    title: "NIFT Admission 2024 - Fashion Design",
+    organization: "National Institute of Fashion Technology",
+    category: "admission",
+    description: "Admission to fashion design and related courses.",
+    lastDate: new Date('2024-01-31'),
+    startDate: new Date('2023-10-01'),
+    applicationFee: "₹2500 (General), ₹1250 (SC/ST)",
+    applyLink: "https://nift.ac.in",
+    eligibility: "12th pass for UG, Bachelor's for PG with entrance test.",
+    salary: "Course Fee: ₹1,95,000 per year",
+    posts: 3500
+  },
+  {
+    title: "NID Admission 2024 - Design Programs",
+    organization: "National Institute of Design",
+    category: "admission",
+    description: "Admission to various design programs at NID.",
+    lastDate: new Date('2024-02-15'),
+    startDate: new Date('2023-11-01'),
+    applicationFee: "₹3000 (General), ₹1500 (SC/ST)",
+    applyLink: "https://nid.edu",
+    eligibility: "12th pass for UG, Bachelor's for PG with portfolio and entrance test.",
+    salary: "Course Fee: ₹2,50,000 per year",
+    posts: 400
+  }
+];
+
+async function insertSampleData() {
+  try {
+    await mongoose.connect('mongodb://localhost:27017/sarkari-result');
+    console.log('Connected to MongoDB');
+
+    await Job.deleteMany({});
+    console.log('Cleared existing jobs');
+
+    await Job.insertMany(sampleJobs);
+    console.log(`Inserted ${sampleJobs.length} sample jobs`);
+
+    console.log('Sample data inserted successfully!');
+    process.exit(0);
+  } catch (error) {
+    console.error('Error inserting sample data:', error);
+    process.exit(1);
+  }
+}
+
+insertSampleData();

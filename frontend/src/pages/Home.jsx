@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { jobsAPI } from '../services/api';
 import JobCard from '../components/JobCard';
 import YouTubeSection from '../components/YouTubeSection';
-import { FaGraduationCap, FaFileAlt, FaBriefcase, FaArrowRight, FaWhatsapp, FaSearch, FaTimes, FaSpinner, FaExternalLinkAlt, FaEye, FaMicrophone, FaMicrophoneSlash, FaTelegram, FaCircle } from 'react-icons/fa';
+import { FaGraduationCap, FaFileAlt, FaBriefcase, FaArrowRight, FaWhatsapp, FaSearch, FaTimes, FaSpinner, FaExternalLinkAlt, FaEye, FaMicrophone, FaMicrophoneSlash, FaTelegram, FaCircle, FaFacebook } from 'react-icons/fa';
 
 const tilePalette = [
   'linear-gradient(135deg, #1f2937 0%, #374151 100%)',
@@ -54,6 +54,30 @@ const highlightColumnsConfig = [
     viewAllLink: '/category/upcoming-job',
     ctaTint: '#fff7ed',
     ctaColor: '#c2410c'
+  },
+  {
+    id: 'scholarships',
+    title: 'Scholarships',
+    subtitle: 'Education funding opportunities',
+    headerGradient: 'linear-gradient(120deg, #8b5cf6 0%, #7c3aed 55%, #6d28d9 100%)',
+    empty: 'No scholarships available',
+    icon: <FaGraduationCap size={22} />,
+    viewAllLabel: 'View All Scholarships',
+    viewAllLink: '/category/scholarship',
+    ctaTint: '#faf5ff',
+    ctaColor: '#7c2d12'
+  },
+  {
+    id: 'admissions',
+    title: 'Admissions',
+    subtitle: 'University & college admissions',
+    headerGradient: 'linear-gradient(120deg, #06b6d4 0%, #0891b2 55%, #0e7490 100%)',
+    empty: 'No admissions available',
+    icon: <FaFileAlt size={22} />,
+    viewAllLabel: 'View All Admissions',
+    viewAllLink: '/category/admission',
+    ctaTint: '#ecfeff',
+    ctaColor: '#155e75'
   }
 ];
 
@@ -64,6 +88,8 @@ const Home = () => {
     results: [],
     admitCards: [],
     upcomingJobs: [],
+    scholarships: [],
+    admissions: [],
     latest: []
   });
   const [loading, setLoading] = useState(true);
@@ -191,7 +217,7 @@ const Home = () => {
     }
     
     // Search in all jobs data
-    const allJobs = [...jobs.results, ...jobs.admitCards, ...jobs.upcomingJobs, ...jobs.latest];
+    const allJobs = [...jobs.results, ...jobs.admitCards, ...jobs.upcomingJobs, ...jobs.scholarships, ...jobs.admissions, ...jobs.latest];
     
     // Clean and normalize search query
     const cleanQuery = query.toLowerCase().trim();
@@ -280,7 +306,7 @@ const Home = () => {
       }
       
       // Enhanced search in all data with better matching
-      const allJobs = [...jobs.results, ...jobs.admitCards, ...jobs.upcomingJobs, ...jobs.latest];
+      const allJobs = [...jobs.results, ...jobs.admitCards, ...jobs.upcomingJobs, ...jobs.scholarships, ...jobs.admissions, ...jobs.latest];
       
       const cleanQuery = searchQuery.toLowerCase().trim();
       const queryWords = cleanQuery.split(/\s+/);
@@ -314,25 +340,31 @@ const Home = () => {
 
   const fetchJobs = async () => {
     try {
-      const [resultsRes, admitCardsRes, upcomingJobsRes, latestRes] = await Promise.all([
+      const [resultsRes, admitCardsRes, upcomingJobsRes, scholarshipsRes, admissionsRes, latestRes] = await Promise.all([
         jobsAPI.getAllJobs('result'),
         jobsAPI.getAllJobs('admit-card'),
         jobsAPI.getAllJobs('upcoming-job'),
+        jobsAPI.getAllJobs('scholarship'),
+        jobsAPI.getAllJobs('admission'),
         jobsAPI.getAllJobs()
       ]);
 
-      console.log('API Response:', { resultsRes, admitCardsRes, upcomingJobsRes, latestRes });
+      console.log('API Response:', { resultsRes, admitCardsRes, upcomingJobsRes, scholarshipsRes, admissionsRes, latestRes });
       
       // Handle both response.data and response.data.data formats
       const resultsData = resultsRes.data?.data || resultsRes.data || [];
       const admitCardsData = admitCardsRes.data?.data || admitCardsRes.data || [];
       const upcomingJobsData = upcomingJobsRes.data?.data || upcomingJobsRes.data || [];
+      const scholarshipsData = scholarshipsRes.data?.data || scholarshipsRes.data || [];
+      const admissionsData = admissionsRes.data?.data || admissionsRes.data || [];
       const latestData = latestRes.data?.data || latestRes.data || [];
       
       setJobs({
         results: resultsData.slice(0, 20),
         admitCards: admitCardsData.slice(0, 20),
         upcomingJobs: upcomingJobsData.slice(0, 20),
+        scholarships: scholarshipsData.slice(0, 20),
+        admissions: admissionsData.slice(0, 20),
         latest: latestData.slice(0, 6)
       });
     } catch (error) {
@@ -341,6 +373,8 @@ const Home = () => {
         results: [],
         admitCards: [],
         upcomingJobs: [],
+        scholarships: [],
+        admissions: [],
         latest: []
       });
     } finally {
@@ -464,10 +498,13 @@ const Home = () => {
             
             {/* Content Display - 8 Updates in 2 Rows */}
             {(() => {
-              const weeklyUpdates = [...jobs.results, ...jobs.admitCards, ...jobs.upcomingJobs, ...jobs.latest]
-                .filter(job => job.createdAt && new Date(job.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000));
+              // Get all jobs from last 30 days instead of 7 days for more content
+              const recentUpdates = [...jobs.results, ...jobs.admitCards, ...jobs.upcomingJobs, ...jobs.scholarships, ...jobs.admissions, ...jobs.latest]
+                .filter(job => job.createdAt && new Date(job.createdAt) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000))
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by newest first
+                .slice(0, 16); // Take top 16 most recent
               
-              if (weeklyUpdates.length === 0) {
+              if (recentUpdates.length === 0) {
                 return (
                   <div style={{
                     padding: '30px 20px',
@@ -476,7 +513,7 @@ const Home = () => {
                     fontSize: '0.9rem',
                     fontWeight: '500'
                   }}>
-                    No new updates in the last week
+                    No new updates in the last month
                   </div>
                 );
               }
@@ -500,10 +537,10 @@ const Home = () => {
                       <div style={{
                         display: 'inline-flex',
                         gap: '30px',
-                        animation: 'marqueeLeft 40s linear infinite',
+                        animation: 'marqueeLeft 80s linear infinite',
                         alignItems: 'center'
                       }}>
-                        {weeklyUpdates.slice(0, 4).map((job, index) => (
+                        {recentUpdates.slice(0, 8).map((job, index) => (
                           <Link
                             key={`row1-${job._id}`}
                             to={`/job/${job._id}`}
@@ -537,7 +574,7 @@ const Home = () => {
                             <span>{job.title}</span>
                           </Link>
                         ))}
-                        {weeklyUpdates.slice(0, 4).map((job, index) => (
+                        {recentUpdates.slice(0, 8).map((job, index) => (
                           <Link
                             key={`row1-dup-${job._id}`}
                             to={`/job/${job._id}`}
@@ -584,10 +621,10 @@ const Home = () => {
                       <div style={{
                         display: 'inline-flex',
                         gap: '30px',
-                        animation: 'marqueeRight 40s linear infinite',
+                        animation: 'marqueeRight 80s linear infinite',
                         alignItems: 'center'
                       }}>
-                        {weeklyUpdates.slice(4, 8).map((job, index) => (
+                        {recentUpdates.slice(8, 16).map((job, index) => (
                           <Link
                             key={`row2-${job._id}`}
                             to={`/job/${job._id}`}
@@ -621,7 +658,7 @@ const Home = () => {
                             <span>{job.title}</span>
                           </Link>
                         ))}
-                        {weeklyUpdates.slice(4, 8).map((job, index) => (
+                        {recentUpdates.slice(8, 16).map((job, index) => (
                           <Link
                             key={`row2-dup-${job._id}`}
                             to={`/job/${job._id}`}
@@ -711,6 +748,28 @@ const Home = () => {
             >
               <FaTelegram size={20} />
               Join Telegram
+            </a>
+            
+            <a
+              href="https://facebook.com/your_facebook_page"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'clamp(0.4rem, 1.5vw, 0.5rem)',
+                background: '#1877f2',
+                color: 'white',
+                padding: 'clamp(10px, 3vw, 12px) clamp(20px, 5vw, 28px)',
+                borderRadius: '999px',
+                textDecoration: 'none',
+                fontWeight: '600',
+                fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                boxShadow: '0 15px 35px rgba(24, 119, 242, 0.35)'
+              }}
+            >
+              <FaFacebook size={20} />
+              Join Facebook
             </a>
           </div>
 
@@ -965,6 +1024,10 @@ const Home = () => {
                     categoryInfo = { label: 'Admit Card', color: '#10b981' };
                   } else if (jobs.upcomingJobs.includes(result)) {
                     categoryInfo = { label: 'Job', color: '#f97316' };
+                  } else if (jobs.scholarships.includes(result)) {
+                    categoryInfo = { label: 'Scholarship', color: '#8b5cf6' };
+                  } else if (jobs.admissions.includes(result)) {
+                    categoryInfo = { label: 'Admission', color: '#06b6d4' };
                   }
                   
                   return (
@@ -1111,15 +1174,69 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Three Column Section */}
+      {/* Three Column Section - First Row */}
       <section style={{ padding: '3rem 0', background: 'var(--color-surface)' }}>
         <div className="container">
           <div className="three-column-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '2rem',
+            marginBottom: '3rem'
+          }}>
+            {highlightColumnsConfig.slice(0, 3).map((column) => {
+              const columnJobs = jobs[column.id] || [];
+              const hasJobs = columnJobs.length > 0;
+              return (
+                <div key={column.id} className="status-card">
+                  <div className="status-card__header" style={{ background: column.headerGradient }}>
+                    <div className="status-card__title">
+                      <span className="status-card__icon">
+                        {column.icon}
+                      </span>
+                      <div>
+                        <p>{column.title}</p>
+                        <span className="status-card__subtitle">{column.subtitle}</span>
+                      </div>
+                    </div>
+                    <span className="status-card__count" title={`${columnJobs.length} total`}>{columnJobs.length > 20 ? '20+' : columnJobs.length}</span>
+                  </div>
+
+                  <div className={`status-card__body${hasJobs ? '' : ' status-card__body--empty'}`}>
+                    {hasJobs ? (
+                      <ul className="status-card__list">
+                        {columnJobs.slice(0, 20).map((job) => (
+                          <li key={job._id}>
+                            <Link to={`/job/${job._id}`}>
+                              {truncateText(job.title)}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="status-card__empty">{column.empty}</p>
+                    )}
+                  </div>
+
+                  <Link
+                    to={column.viewAllLink}
+                    className="status-card__cta"
+                    style={{ background: column.ctaTint, color: column.ctaColor || 'var(--color-text)' }}
+                  >
+                    {column.viewAllLabel}
+                    <FaArrowRight size={16} />
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Second Row - Scholarships and Admissions */}
+          <div className="three-column-grid" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
             gap: '2rem'
           }}>
-            {highlightColumnsConfig.map((column) => {
+            {highlightColumnsConfig.slice(3, 5).map((column) => {
               const columnJobs = jobs[column.id] || [];
               const hasJobs = columnJobs.length > 0;
               return (

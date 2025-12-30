@@ -34,6 +34,10 @@ const CategoryPage = () => {
         return 'Admit Cards';
       case 'upcoming-job':
         return 'Upcoming Jobs';
+      case 'scholarship':
+        return 'Scholarships';
+      case 'admission':
+        return 'Admissions';
       default:
         return 'Jobs';
     }
@@ -47,6 +51,10 @@ const CategoryPage = () => {
         return 'linear-gradient(135deg, #e0f2ff 0%, #f5fbff 100%)';
       case 'upcoming-job':
         return 'linear-gradient(135deg, #fff5f1 0%, #fff9f4 100%)';
+      case 'scholarship':
+        return 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)';
+      case 'admission':
+        return 'linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)';
       default:
         return 'linear-gradient(135deg, #f1f5f9 0%, #ffffff 100%)';
     }
@@ -185,6 +193,10 @@ const CategoryPage = () => {
                         return '#2563eb';
                       case 'upcoming-job':
                         return '#dc2626';
+                      case 'scholarship':
+                        return '#7c3aed';
+                      case 'admission':
+                        return '#0891b2';
                       default:
                         return '#6b7280';
                     }
@@ -198,6 +210,10 @@ const CategoryPage = () => {
                         return 'Admit Card';
                       case 'upcoming-job':
                         return 'Job Opening';
+                      case 'scholarship':
+                        return 'Scholarship';
+                      case 'admission':
+                        return 'Admission';
                       default:
                         return category;
                     }
@@ -210,6 +226,10 @@ const CategoryPage = () => {
                       case 'admit-card':
                         return { text: 'Download', icon: FaExternalLinkAlt };
                       case 'upcoming-job':
+                        return { text: 'Apply Now', icon: FaExternalLinkAlt };
+                      case 'scholarship':
+                        return { text: 'Apply Now', icon: FaExternalLinkAlt };
+                      case 'admission':
                         return { text: 'Apply Now', icon: FaExternalLinkAlt };
                       default:
                         return { text: 'View Details', icon: FaEye };

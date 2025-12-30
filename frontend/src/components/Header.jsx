@@ -225,6 +225,32 @@ const Header = () => {
                 Result
               </Link>
               
+              <Link
+                to="/category/scholarship"
+                className="nav-item"
+                target={isAdminPage ? "_blank" : "_self"}
+                rel={isAdminPage ? "noopener noreferrer" : undefined}
+                style={navLinkStyle}
+                onMouseEnter={(event) => handleHover(event, true)}
+                onMouseLeave={(event) => handleHover(event, false)}
+              >
+                <FaGraduationCap size={16} />
+                Scholarship
+              </Link>
+              
+              <Link
+                to="/category/admission"
+                className="nav-item"
+                target={isAdminPage ? "_blank" : "_self"}
+                rel={isAdminPage ? "noopener noreferrer" : undefined}
+                style={navLinkStyle}
+                onMouseEnter={(event) => handleHover(event, true)}
+                onMouseLeave={(event) => handleHover(event, false)}
+              >
+                <FaFileAlt size={16} />
+                Admission
+              </Link>
+              
               <button
                 onClick={toggleTheme}
                 style={{

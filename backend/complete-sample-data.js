@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Job = require('./models/Job');
 
 const sampleJobs = [
-  // Upcoming Jobs (20)
+  // Upcoming Jobs (10)
   {
     title: "SSC CGL 2024 - Combined Graduate Level Examination",
     organization: "Staff Selection Commission",
@@ -133,138 +133,8 @@ const sampleJobs = [
     salary: "₹9,300 - ₹34,800 per month",
     posts: 806
   },
-  {
-    title: "RPSC RAS 2024 - Rajasthan Administrative Service",
-    organization: "Rajasthan Public Service Commission",
-    category: "upcoming-job",
-    description: "RPSC has released notification for RAS/RTS posts.",
-    lastDate: new Date('2024-02-22'),
-    startDate: new Date('2024-01-22'),
-    applicationFee: "₹600 (General/OBC), ₹400 (SC/ST)",
-    applyLink: "https://rpsc.rajasthan.gov.in",
-    eligibility: "Bachelor's degree. Age limit: 18-40 years.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 905
-  },
-  {
-    title: "GPSC Class 1-2 2024 - Gujarat Public Service",
-    organization: "Gujarat Public Service Commission",
-    category: "upcoming-job",
-    description: "GPSC has announced recruitment for Class 1-2 posts.",
-    lastDate: new Date('2024-03-08'),
-    startDate: new Date('2024-02-08'),
-    applicationFee: "₹100 (All categories)",
-    applyLink: "https://gpsc.gujarat.gov.in",
-    eligibility: "Bachelor's degree. Age limit: 18-35 years.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 274
-  },
-  {
-    title: "HPSC HCS 2024 - Haryana Civil Services",
-    organization: "Haryana Public Service Commission",
-    category: "upcoming-job",
-    description: "HPSC has released notification for HCS posts.",
-    lastDate: new Date('2024-02-26'),
-    startDate: new Date('2024-01-26'),
-    applicationFee: "₹1000 (General), ₹250 (SC/BCA/BCC)",
-    applyLink: "https://hpsc.gov.in",
-    eligibility: "Bachelor's degree. Age limit: 21-42 years.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 467
-  },
-  {
-    title: "KPSC KAS 2024 - Karnataka Administrative Service",
-    organization: "Karnataka Public Service Commission",
-    category: "upcoming-job",
-    description: "KPSC has announced recruitment for KAS posts.",
-    lastDate: new Date('2024-03-12'),
-    startDate: new Date('2024-02-12'),
-    applicationFee: "₹600 (General/OBC), ₹300 (SC/ST)",
-    applyLink: "https://kpsc.kar.nic.in",
-    eligibility: "Bachelor's degree. Age limit: 21-35 years.",
-    salary: "₹15,600 - ₹39,100 per month",
-    posts: 545
-  },
-  {
-    title: "TSPSC Group 1 2024 - Telangana State Service",
-    organization: "Telangana State Public Service Commission",
-    category: "upcoming-job",
-    description: "TSPSC has released notification for Group 1 posts.",
-    lastDate: new Date('2024-02-29'),
-    startDate: new Date('2024-01-29'),
-    applicationFee: "₹200 (General/BC), ₹150 (SC/ST)",
-    applyLink: "https://tspsc.gov.in",
-    eligibility: "Bachelor's degree. Age limit: 18-44 years.",
-    salary: "₹22,460 - ₹87,850 per month",
-    posts: 503
-  },
-  {
-    title: "APPSC Group 1 2024 - Andhra Pradesh Service",
-    organization: "Andhra Pradesh Public Service Commission",
-    category: "upcoming-job",
-    description: "APPSC has announced recruitment for Group 1 posts.",
-    lastDate: new Date('2024-03-18'),
-    startDate: new Date('2024-02-18'),
-    applicationFee: "₹250 (General/BC), ₹150 (SC/ST)",
-    applyLink: "https://psc.ap.gov.in",
-    eligibility: "Bachelor's degree. Age limit: 18-42 years.",
-    salary: "₹22,460 - ₹87,850 per month",
-    posts: 1051
-  },
-  {
-    title: "WBPSC WBCS 2024 - West Bengal Civil Service",
-    organization: "West Bengal Public Service Commission",
-    category: "upcoming-job",
-    description: "WBPSC has released notification for WBCS posts.",
-    lastDate: new Date('2024-02-24'),
-    startDate: new Date('2024-01-24'),
-    applicationFee: "₹210 (General/OBC), ₹50 (SC/ST)",
-    applyLink: "https://wbpsc.gov.in",
-    eligibility: "Bachelor's degree. Age limit: 21-36 years.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 597
-  },
-  {
-    title: "OPSC OCS 2024 - Odisha Civil Services",
-    organization: "Odisha Public Service Commission",
-    category: "upcoming-job",
-    description: "OPSC has announced recruitment for OCS posts.",
-    lastDate: new Date('2024-03-20'),
-    startDate: new Date('2024-02-20'),
-    applicationFee: "₹400 (General/OBC), ₹100 (SC/ST)",
-    applyLink: "https://opsc.gov.in",
-    eligibility: "Bachelor's degree. Age limit: 21-32 years.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 354
-  },
-  {
-    title: "JPSC Jharkhand PCS 2024 - Provincial Civil Service",
-    organization: "Jharkhand Public Service Commission",
-    category: "upcoming-job",
-    description: "JPSC has released notification for PCS posts.",
-    lastDate: new Date('2024-02-27'),
-    startDate: new Date('2024-01-27'),
-    applicationFee: "₹600 (General/OBC), ₹150 (SC/ST)",
-    applyLink: "https://jpsc.gov.in",
-    eligibility: "Bachelor's degree. Age limit: 21-35 years.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 263
-  },
-  {
-    title: "CGPSC State Service 2024 - Chhattisgarh",
-    organization: "Chhattisgarh Public Service Commission",
-    category: "upcoming-job",
-    description: "CGPSC has announced recruitment for State Service posts.",
-    lastDate: new Date('2024-03-25'),
-    startDate: new Date('2024-02-25'),
-    applicationFee: "₹400 (General/OBC), ₹300 (SC/ST)",
-    applyLink: "https://psc.cg.gov.in",
-    eligibility: "Bachelor's degree. Age limit: 18-35 years.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 178
-  },
 
-  // Results (20)
+  // Results (10)
   {
     title: "UPSC Civil Services 2023 - Final Result Declared",
     organization: "Union Public Service Commission",
@@ -395,138 +265,8 @@ const sampleJobs = [
     salary: "₹9,300 - ₹34,800 per month",
     posts: 2035
   },
-  {
-    title: "MPSC State Service 2023 - Result Declared",
-    organization: "Maharashtra Public Service Commission",
-    category: "result",
-    description: "MPSC has declared the result of State Service examination 2023.",
-    lastDate: new Date('2024-01-26'),
-    startDate: new Date('2023-05-14'),
-    applicationFee: "₹524 (General/OBC), ₹324 (SC/ST)",
-    applyLink: "https://mpsc.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 806
-  },
-  {
-    title: "RPSC RAS 2023 - Mains Result Out",
-    organization: "Rajasthan Public Service Commission",
-    category: "result",
-    description: "RPSC has declared the mains result of RAS examination 2023.",
-    lastDate: new Date('2024-01-19'),
-    startDate: new Date('2023-10-27'),
-    applicationFee: "₹600 (General/OBC), ₹400 (SC/ST)",
-    applyLink: "https://rpsc.rajasthan.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 905
-  },
-  {
-    title: "GPSC Class 1-2 2023 - Final Result",
-    organization: "Gujarat Public Service Commission",
-    category: "result",
-    description: "GPSC has declared the final result of Class 1-2 examination 2023.",
-    lastDate: new Date('2024-01-23'),
-    startDate: new Date('2023-03-19'),
-    applicationFee: "₹100 (All categories)",
-    applyLink: "https://gpsc.gujarat.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 274
-  },
-  {
-    title: "HPSC HCS 2023 - Interview Result Published",
-    organization: "Haryana Public Service Commission",
-    category: "result",
-    description: "HPSC has published the interview result of HCS examination 2023.",
-    lastDate: new Date('2024-01-17'),
-    startDate: new Date('2023-05-21'),
-    applicationFee: "₹1000 (General), ₹250 (SC/BCA/BCC)",
-    applyLink: "https://hpsc.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 467
-  },
-  {
-    title: "KPSC KAS 2023 - Preliminary Result Out",
-    organization: "Karnataka Public Service Commission",
-    category: "result",
-    description: "KPSC has declared the preliminary result of KAS examination 2023.",
-    lastDate: new Date('2024-01-21'),
-    startDate: new Date('2023-04-23'),
-    applicationFee: "₹600 (General/OBC), ₹300 (SC/ST)",
-    applyLink: "https://kpsc.kar.nic.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹15,600 - ₹39,100 per month",
-    posts: 545
-  },
-  {
-    title: "TSPSC Group 1 2023 - Mains Result",
-    organization: "Telangana State Public Service Commission",
-    category: "result",
-    description: "TSPSC has declared the mains result of Group 1 examination 2023.",
-    lastDate: new Date('2024-01-24'),
-    startDate: new Date('2023-06-18'),
-    applicationFee: "₹200 (General/BC), ₹150 (SC/ST)",
-    applyLink: "https://tspsc.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹22,460 - ₹87,850 per month",
-    posts: 503
-  },
-  {
-    title: "APPSC Group 1 2023 - Final Merit List",
-    organization: "Andhra Pradesh Public Service Commission",
-    category: "result",
-    description: "APPSC has published the final merit list of Group 1 examination 2023.",
-    lastDate: new Date('2024-01-27'),
-    startDate: new Date('2023-07-02'),
-    applicationFee: "₹250 (General/BC), ₹150 (SC/ST)",
-    applyLink: "https://psc.ap.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹22,460 - ₹87,850 per month",
-    posts: 1051
-  },
-  {
-    title: "WBPSC WBCS 2023 - Interview Result",
-    organization: "West Bengal Public Service Commission",
-    category: "result",
-    description: "WBPSC has declared the interview result of WBCS examination 2023.",
-    lastDate: new Date('2024-01-13'),
-    startDate: new Date('2023-02-26'),
-    applicationFee: "₹210 (General/OBC), ₹50 (SC/ST)",
-    applyLink: "https://wbpsc.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 597
-  },
-  {
-    title: "OPSC OCS 2023 - Final Result Declared",
-    organization: "Odisha Public Service Commission",
-    category: "result",
-    description: "OPSC has declared the final result of OCS examination 2023.",
-    lastDate: new Date('2024-01-29'),
-    startDate: new Date('2023-08-13'),
-    applicationFee: "₹400 (General/OBC), ₹100 (SC/ST)",
-    applyLink: "https://opsc.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 354
-  },
-  {
-    title: "JPSC Jharkhand PCS 2023 - Mains Result",
-    organization: "Jharkhand Public Service Commission",
-    category: "result",
-    description: "JPSC has declared the mains result of PCS examination 2023.",
-    lastDate: new Date('2024-01-11'),
-    startDate: new Date('2023-09-10'),
-    applicationFee: "₹600 (General/OBC), ₹150 (SC/ST)",
-    applyLink: "https://jpsc.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 263
-  },
 
-  // Admit Cards (20)
+  // Admit Cards (10)
   {
     title: "GATE 2024 - Admit Card Available for Download",
     organization: "Indian Institute of Science",
@@ -657,157 +397,7 @@ const sampleJobs = [
     salary: "₹15,600 - ₹39,100 per month",
     posts: 400
   },
-  {
-    title: "DRDO Scientist B 2024 - Exam Admit Card",
-    organization: "Defence Research and Development Organisation",
-    category: "admit-card",
-    description: "DRDO has released admit card for Scientist B examination 2024.",
-    lastDate: new Date('2024-04-07'),
-    startDate: new Date('2024-02-05'),
-    applicationFee: "₹100 (All categories)",
-    applyLink: "https://drdo.gov.in",
-    eligibility: "BE/B.Tech in relevant discipline.",
-    salary: "₹56,100 - ₹1,77,500 per month",
-    posts: 1901
-  },
-  {
-    title: "ISRO Scientist 2024 - Written Test Hall Ticket",
-    organization: "Indian Space Research Organisation",
-    category: "admit-card",
-    description: "ISRO has released hall ticket for Scientist written test 2024.",
-    lastDate: new Date('2024-04-14'),
-    startDate: new Date('2024-01-28'),
-    applicationFee: "₹100 (All categories)",
-    applyLink: "https://isro.gov.in",
-    eligibility: "BE/B.Tech in relevant discipline.",
-    salary: "₹56,100 - ₹1,77,500 per month",
-    posts: 182
-  },
-  {
-    title: "UPPSC PCS 2024 - Preliminary Exam Admit Card",
-    organization: "Uttar Pradesh Public Service Commission",
-    category: "admit-card",
-    description: "UPPSC has released admit card for PCS Preliminary examination 2024.",
-    lastDate: new Date('2024-06-09'),
-    startDate: new Date('2024-02-10'),
-    applicationFee: "₹125 (General/OBC), ₹65 (SC/ST)",
-    applyLink: "https://uppsc.up.nic.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 688
-  },
-  {
-    title: "BPSC 69th CCE 2024 - Admit Card Download",
-    organization: "Bihar Public Service Commission",
-    category: "admit-card",
-    description: "BPSC has released admit card for 69th Combined Competitive Examination 2024.",
-    lastDate: new Date('2024-05-12'),
-    startDate: new Date('2024-01-18'),
-    applicationFee: "₹750 (General), ₹200 (SC/ST)",
-    applyLink: "https://bpsc.bih.nic.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 2035
-  },
-  {
-    title: "MPSC State Service 2024 - Preliminary Admit Card",
-    organization: "Maharashtra Public Service Commission",
-    category: "admit-card",
-    description: "MPSC has released admit card for State Service Preliminary examination 2024.",
-    lastDate: new Date('2024-05-26'),
-    startDate: new Date('2024-02-15'),
-    applicationFee: "₹524 (General/OBC), ₹324 (SC/ST)",
-    applyLink: "https://mpsc.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 806
-  },
-  {
-    title: "RPSC RAS 2024 - Preliminary Exam Hall Ticket",
-    organization: "Rajasthan Public Service Commission",
-    category: "admit-card",
-    description: "RPSC has released hall ticket for RAS Preliminary examination 2024.",
-    lastDate: new Date('2024-04-28'),
-    startDate: new Date('2024-01-22'),
-    applicationFee: "₹600 (General/OBC), ₹400 (SC/ST)",
-    applyLink: "https://rpsc.rajasthan.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 905
-  },
-  {
-    title: "GPSC Class 1-2 2024 - Preliminary Admit Card",
-    organization: "Gujarat Public Service Commission",
-    category: "admit-card",
-    description: "GPSC has released admit card for Class 1-2 Preliminary examination 2024.",
-    lastDate: new Date('2024-05-19'),
-    startDate: new Date('2024-02-08'),
-    applicationFee: "₹100 (All categories)",
-    applyLink: "https://gpsc.gujarat.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 274
-  },
-  {
-    title: "HPSC HCS 2024 - Preliminary Exam Admit Card",
-    organization: "Haryana Public Service Commission",
-    category: "admit-card",
-    description: "HPSC has released admit card for HCS Preliminary examination 2024.",
-    lastDate: new Date('2024-05-05'),
-    startDate: new Date('2024-01-26'),
-    applicationFee: "₹1000 (General), ₹250 (SC/BCA/BCC)",
-    applyLink: "https://hpsc.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹9,300 - ₹34,800 per month",
-    posts: 467
-  },
-  {
-    title: "KPSC KAS 2024 - Preliminary Exam Hall Ticket",
-    organization: "Karnataka Public Service Commission",
-    category: "admit-card",
-    description: "KPSC has released hall ticket for KAS Preliminary examination 2024.",
-    lastDate: new Date('2024-06-16'),
-    startDate: new Date('2024-02-12'),
-    applicationFee: "₹600 (General/OBC), ₹300 (SC/ST)",
-    applyLink: "https://kpsc.kar.nic.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹15,600 - ₹39,100 per month",
-    posts: 545
-  },
-  {
-    title: "TSPSC Group 1 2024 - Preliminary Admit Card",
-    organization: "Telangana State Public Service Commission",
-    category: "admit-card",
-    description: "TSPSC has released admit card for Group 1 Preliminary examination 2024.",
-    lastDate: new Date('2024-06-23'),
-    startDate: new Date('2024-01-29'),
-    applicationFee: "₹200 (General/BC), ₹150 (SC/ST)",
-    applyLink: "https://tspsc.gov.in",
-    eligibility: "Bachelor's degree.",
-    salary: "₹22,460 - ₹87,850 per month",
-    posts: 503
-];
 
-async function insertSampleData() {
-  try {
-    await mongoose.connect('mongodb://localhost:27017/sarkari-result');
-    console.log('Connected to MongoDB');
-
-    await Job.deleteMany({});
-    console.log('Cleared existing jobs');
-
-    await Job.insertMany(sampleJobs);
-    console.log(`Inserted ${sampleJobs.length} sample jobs`);
-
-    console.log('Sample data inserted successfully!');
-    process.exit(0);
-  } catch (error) {
-    console.error('Error inserting sample data:', error);
-    process.exit(1);
-  }
-}
-
-insertSampleData();
   // Scholarships (10)
   {
     title: "National Merit Scholarship 2024 - For Undergraduate Students",
@@ -1071,3 +661,25 @@ insertSampleData();
     salary: "Course Fee: ₹2,50,000 per year",
     posts: 400
   }
+];
+
+async function insertSampleData() {
+  try {
+    await mongoose.connect('mongodb://localhost:27017/sarkari-result');
+    console.log('Connected to MongoDB');
+
+    await Job.deleteMany({});
+    console.log('Cleared existing jobs');
+
+    await Job.insertMany(sampleJobs);
+    console.log(`Inserted ${sampleJobs.length} sample jobs`);
+
+    console.log('Sample data inserted successfully!');
+    process.exit(0);
+  } catch (error) {
+    console.error('Error inserting sample data:', error);
+    process.exit(1);
+  }
+}
+
+insertSampleData();

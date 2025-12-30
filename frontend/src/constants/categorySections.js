@@ -215,6 +215,124 @@ export const CATEGORY_SECTION_CONFIG = {
       placeholder: 'Visit btsc.bihar.gov.in\nOpen Staff Nurse Result link\nEnter Roll / Application Number & DOB\nDownload the scorecard.',
       helper: 'Step-by-step guidance for result download.'
     }
+  ],
+  scholarship: [
+    ...baseBannerFields,
+    {
+      key: 'importantDates',
+      label: 'Important Dates',
+      type: 'textarea',
+      placeholder: 'Application Start: 15 November 2025\nLast Date: 20 December 2025\nResult Date: 10 January 2026',
+      helper: `${listStyleHelper} Example: "Application Start: 15 November 2025".`
+    },
+    {
+      key: 'applicationFee',
+      label: 'Application Fee Details',
+      type: 'textarea',
+      placeholder: 'GEN/ EWS/ OBC: ₹500\nSC/ ST/ PwBD: ₹00\nPayment Mode: Online',
+      helper: listStyleHelper
+    },
+    {
+      key: 'ageLimit',
+      label: 'Age Limit',
+      type: 'textarea',
+      placeholder: 'Minimum Age: 18 Years\nMaximum Age: 25 Years\nRefer to notification for relaxations.',
+      helper: listStyleHelper
+    },
+    {
+      key: 'totalPosts',
+      label: 'Total Scholarships',
+      type: 'textarea',
+      placeholder: '500 Scholarships\nRead the official notification for category wise distribution.',
+      helper: 'Mention total scholarships and supporting notes.'
+    },
+    {
+      key: 'eligibilityDetails',
+      label: 'Eligibility Details',
+      type: 'textarea',
+      placeholder: 'Merit Based Scholarship 2025 - For students pursuing graduation/post-graduation.',
+      helper: 'Summaries for eligibility requirements.'
+    },
+    {
+      key: 'salaryPerks',
+      label: 'Scholarship Amount',
+      type: 'textarea',
+      placeholder: 'Amount: ₹50,000/- per year\nDuration: Complete course duration',
+      helper: listStyleHelper
+    },
+    {
+      key: 'selectionProcess',
+      label: 'Selection Process',
+      type: 'textarea',
+      placeholder: 'Merit Based Selection\nDocument Verification\nInterview (if applicable)',
+      helper: 'One step per line.'
+    },
+    {
+      key: 'howTo',
+      label: 'How to Apply',
+      type: 'textarea',
+      placeholder: 'Visit official website\nFill online application\nUpload required documents\nSubmit application.',
+      helper: 'Describe detailed instructions for application.'
+    }
+  ],
+  admission: [
+    ...baseBannerFields,
+    {
+      key: 'importantDates',
+      label: 'Important Dates',
+      type: 'textarea',
+      placeholder: 'Application Start: 01 December 2025\nLast Date: 31 December 2025\nEntrance Exam: 15 January 2026',
+      helper: `${listStyleHelper} Example: "Application Start: 01 December 2025".`
+    },
+    {
+      key: 'applicationFee',
+      label: 'Application Fee Details',
+      type: 'textarea',
+      placeholder: 'GEN/ EWS/ OBC: ₹1500\nSC/ ST/ PwBD: ₹750\nPayment Mode: Online/Offline',
+      helper: listStyleHelper
+    },
+    {
+      key: 'ageLimit',
+      label: 'Age Limit',
+      type: 'textarea',
+      placeholder: 'Minimum Age: 17 Years\nMaximum Age: 23 Years\nAs on 31st December 2025',
+      helper: listStyleHelper
+    },
+    {
+      key: 'totalPosts',
+      label: 'Total Seats',
+      type: 'textarea',
+      placeholder: 'Total Seats: 1000\nRead the prospectus for course wise distribution.',
+      helper: 'Mention total seats and supporting notes.'
+    },
+    {
+      key: 'eligibilityDetails',
+      label: 'Eligibility Details',
+      type: 'textarea',
+      placeholder: 'University Admission 2025 - 12th Pass with minimum 60% marks.',
+      helper: 'Summaries for eligibility requirements.'
+    },
+    {
+      key: 'salaryPerks',
+      label: 'Course Fee',
+      type: 'textarea',
+      placeholder: 'Course Fee: ₹1,00,000/- per year\nHostel Fee: ₹50,000/- per year',
+      helper: listStyleHelper
+    },
+    {
+      key: 'selectionProcess',
+      label: 'Selection Process',
+      type: 'textarea',
+      placeholder: 'Entrance Examination\nCounselling\nDocument Verification\nSeat Allotment',
+      helper: 'One step per line.'
+    },
+    {
+      key: 'howTo',
+      label: 'How to Apply',
+      type: 'textarea',
+      placeholder: 'Visit university website\nFill online application\nUpload required documents\nPay application fee\nSubmit application.',
+      helper: 'Describe detailed instructions for application.'
+    }
   ]
 };
 
