@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { jobsAPI } from '../services/api';
 import JobCard from '../components/JobCard';
 import YouTubeSection from '../components/YouTubeSection';
-import { FaGraduationCap, FaFileAlt, FaBriefcase, FaArrowRight, FaWhatsapp, FaSearch, FaTimes, FaSpinner, FaExternalLinkAlt, FaEye, FaMicrophone, FaMicrophoneSlash, FaTelegram, FaCircle, FaFacebook } from 'react-icons/fa';
+import { FaGraduationCap, FaFileAlt, FaBriefcase, FaArrowRight, FaWhatsapp, FaSearch, FaTimes, FaSpinner, FaExternalLinkAlt, FaEye, FaMicrophone, FaMicrophoneSlash, FaTelegram, FaCircle, FaFacebook, FaInstagram } from 'react-icons/fa';
 
 const tilePalette = [
   'linear-gradient(135deg, #1f2937 0%, #374151 100%)',
@@ -537,7 +537,7 @@ const Home = () => {
                       <div style={{
                         display: 'inline-flex',
                         gap: '30px',
-                        animation: 'marqueeLeft 80s linear infinite',
+                        animation: 'marqueeLeft 120s linear infinite',
                         alignItems: 'center'
                       }}>
                         {recentUpdates.slice(0, 8).map((job, index) => (
@@ -621,7 +621,7 @@ const Home = () => {
                       <div style={{
                         display: 'inline-flex',
                         gap: '30px',
-                        animation: 'marqueeRight 80s linear infinite',
+                        animation: 'marqueeRight 120s linear infinite',
                         alignItems: 'center'
                       }}>
                         {recentUpdates.slice(8, 16).map((job, index) => (
@@ -707,7 +707,7 @@ const Home = () => {
             flexWrap: 'wrap'
           }}>
             <a
-              href="https://wa.me/1234567890"
+              href="https://chat.whatsapp.com/JKMhQcH0RhY44XvM3t48PI"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -729,7 +729,7 @@ const Home = () => {
             </a>
             
             <a
-              href="https://t.me/your_telegram_channel"
+              href="https://t.me/kasimcyberworld"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -751,7 +751,7 @@ const Home = () => {
             </a>
             
             <a
-              href="https://facebook.com/your_facebook_page"
+              href="https://www.facebook.com/share/1EVdSkMWpQ/"
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -770,6 +770,28 @@ const Home = () => {
             >
               <FaFacebook size={20} />
               Join Facebook
+            </a>
+            
+            <a
+              href="https://www.instagram.com/mds_kasim_786?igsh=YnptdDh4dzdlc3Jz"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'clamp(0.4rem, 1.5vw, 0.5rem)',
+                background: 'linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)',
+                color: 'white',
+                padding: 'clamp(10px, 3vw, 12px) clamp(20px, 5vw, 28px)',
+                borderRadius: '999px',
+                textDecoration: 'none',
+                fontWeight: '600',
+                fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                boxShadow: '0 15px 35px rgba(240, 148, 51, 0.35)'
+              }}
+            >
+              <FaInstagram size={20} />
+              Join Instagram
             </a>
           </div>
 

@@ -3,7 +3,7 @@ const Admin = require('./models/Admin');
 
 async function createAdmin() {
   try {
-    await mongoose.connect('mongodb://localhost:27017/sarkari-result');
+    await mongoose.connect('mongodb+srv://kcwjan2026_db_user:W1qKg1VDh%40uTudI7j%21@ksjobs.dpxzod0.mongodb.net/sarkari-result?retryWrites=true&w=majority&appName=KSJOBS');
     console.log('Connected to MongoDB');
 
     const existingAdmin = await Admin.findOne({ username: 'admin' });

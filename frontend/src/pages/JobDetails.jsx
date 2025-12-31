@@ -6,8 +6,7 @@ import {
   FaMoneyBillWave,
   FaUsers,
   FaArrowLeft,
-  FaWhatsapp,
-  FaInstagram
+  FaWhatsapp
 } from 'react-icons/fa';
 import { CATEGORY_SECTION_CONFIG } from '../constants/categorySections';
 import './JobDetails.css';
@@ -226,7 +225,7 @@ const JobDetails = () => {
         <section className="job-details-social" aria-label="Social channels">
           <div className="social-links">
             <a
-              href={job.whatsappLink || 'https://chat.whatsapp.com/sample-invite'}
+              href={job.whatsappLink || 'https://chat.whatsapp.com/CX7Ja6qgpM8Kp4or4xabLi'}
               target="_blank"
               rel="noopener noreferrer"
               className="social-link social-link--whatsapp"
@@ -237,22 +236,6 @@ const JobDetails = () => {
               <div className="social-link__content">
                 <span className="social-link__eyebrow">WhatsApp Channel</span>
                 <span className="social-link__title">Join Our WhatsApp Community</span>
-              </div>
-              {/* <span className="social-link__cta">Follow Now</span> */}
-            </a>
-
-            <a
-              href={job.instagramLink || 'https://instagram.com/sample'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="social-link social-link--instagram"
-            >
-              <div className="social-link__icon">
-                <FaInstagram size={20} />
-              </div>
-              <div className="social-link__content">
-                <span className="social-link__eyebrow">Instagram Updates</span>
-                <span className="social-link__title">Follow Our Instagram Channel</span>
               </div>
               {/* <span className="social-link__cta">Follow Now</span> */}
             </a>

@@ -353,7 +353,7 @@ const sampleJobs = [
 
 async function insertSampleData() {
   try {
-    await mongoose.connect('mongodb://localhost:27017/sarkari-result');
+    await mongoose.connect('mongodb+srv://kcwjan2026_db_user:W1qKg1VDh@uTudI7j!@cluster0.mongodb.net/sarkari-result?retryWrites=true&w=majority');
     console.log('Connected to MongoDB');
 
     await Job.deleteMany({});

@@ -18,13 +18,21 @@ app.use('/api/contact', require('./routes/contact'));
 app.use('/api/youtube', require('./routes/youtube'));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sarkari-result')
+console.log('Attempting to connect to MongoDB Atlas...');
+console.log('Connection string:', process.env.MONGODB_URI ? 'Using .env URI' : 'Using fallback URI');
+
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://kcwjan2026_db_user:W1qKg1VDh%40uTudI7j%21@ksjobs.dpxzod0.mongodb.net/sarkari-result?retryWrites=true&w=majority&appName=KSJOBS')
   .then(() => {
-    console.log('MongoDB connected successfully');
+    console.log('✅ MongoDB Atlas connected successfully!');
+    console.log('Database:', mongoose.connection.name);
+    console.log('Host:', mongoose.connection.host);
     // Initialize auto-deletion system after DB connection
     initializeAutoDelete();
   })
-  .catch(err => console.log('MongoDB connection error:', err));
+  .catch(err => {
+    console.log('❌ MongoDB connection error:', err.message);
+    console.log('Please check your MongoDB Atlas cluster URL and credentials');
+  });
 
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || '0.0.0.0';
