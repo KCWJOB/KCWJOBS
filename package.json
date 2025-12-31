@@ -2,7 +2,7 @@
   "name": "sarkari-result-website",
   "version": "1.0.0",
   "scripts": {
-    "build": "echo 'Backend build complete'",
+    "build": "cd frontend && npm install && npm run build",
     "start": "node backend/server.js"
   },
   "engines": {
