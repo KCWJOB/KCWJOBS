@@ -1,15 +1,57 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const { initializeAutoDelete } = require('./services/autoDelete');
 require('dotenv').config();
 
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Security middleware
+app.use(helmet());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+});
+app.use('/api/', limiter);
+
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      process.env.FRONTEND_URL,
+      process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+    ].filter(Boolean);
+    
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static('uploads'));
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -19,9 +61,18 @@ app.use('/api/youtube', require('./routes/youtube'));
 
 // MongoDB Connection
 console.log('Attempting to connect to MongoDB Atlas...');
+console.log('Environment:', process.env.NODE_ENV || 'development');
 console.log('Connection string:', process.env.MONGODB_URI ? 'Using .env URI' : 'Using fallback URI');
 
-mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://kcwjan2026_db_user:W1qKg1VDh%40uTudI7j%21@ksjobs.dpxzod0.mongodb.net/sarkari-result?retryWrites=true&w=majority&appName=KSJOBS')
+const mongoOptions = {
+  retryWrites: true,
+  w: 'majority',
+  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+};
+
+mongoose.connect(process.env.MONGODB_URI, mongoOptions)
   .then(() => {
     console.log('✅ MongoDB Atlas connected successfully!');
     console.log('Database:', mongoose.connection.name);
@@ -32,7 +83,15 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://kcwjan2026_db_user:W1
   .catch(err => {
     console.log('❌ MongoDB connection error:', err.message);
     console.log('Please check your MongoDB Atlas cluster URL and credentials');
+    process.exit(1);
   });
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('Shutting down gracefully...');
+  await mongoose.connection.close();
+  process.exit(0);
+});
 
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || '0.0.0.0';
