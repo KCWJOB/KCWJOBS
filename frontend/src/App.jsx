@@ -21,6 +21,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/*" element={<AdminDashboard />} />
           </Routes>
         </main>
         <Footer />
