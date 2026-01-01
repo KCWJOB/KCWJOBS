@@ -16,6 +16,7 @@ body:not(.dark-theme) .footer-title,
 body:not(.dark-theme) .footer-link,
 body:not(.dark-theme) .brand-description,
 body:not(.dark-theme) .contact-item,
+body:not(.dark-theme) .contact-item span,
 body:not(.dark-theme) .footer-bottom p {
   color: #ffffff !important;
 }
