@@ -7,16 +7,21 @@ require('dotenv').config();
 const app = express();
 
 // CORS configuration
+const frontendUrls = process.env.FRONTEND_URL ? 
+  process.env.FRONTEND_URL.split(',').map(url => url.trim()) : 
+  ['https://admin.kcwjob.com', 'https://kcwjob.com'];
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL ? 
-    process.env.FRONTEND_URL.split(',').map(url => url.trim()) : 
-    ['https://admin.kcwjob.com', 'https://kcwjob.com'], // fallback
-  credentials: true,
+  origin: frontendUrls,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
 };
-//fixed cors issue here
+
 app.use(cors(corsOptions));
+
+// Handle preflight requests for all routes
+app.options('*', cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static('uploads'));
