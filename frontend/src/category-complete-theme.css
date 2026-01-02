@@ -1,0 +1,132 @@
+/* Complete Category Page Theme System */
+
+/* Global Theme Variables */
+:root {
+  /* Light Theme */
+  --category-primary-text: #0f172a;
+  --category-secondary-text: #374151;
+  --category-muted-text: #64748b;
+  --category-bg: #ffffff;
+  --category-surface: #f8fafc;
+  --category-border: rgba(0, 0, 0, 0.05);
+  --category-hover: #f1f5f9;
+}
+
+body.dark-theme {
+  /* Dark Theme */
+  --category-primary-text: #ffffff;
+  --category-secondary-text: #e5e7eb;
+  --category-muted-text: #d1d5db;
+  --category-bg: #1e293b;
+  --category-surface: #334155;
+  --category-border: rgba(255, 255, 255, 0.1);
+  --category-hover: rgba(255, 255, 255, 0.05);
+}
+
+/* Apply theme to entire category page */
+.category-page {
+  color: var(--category-primary-text) !important;
+  background: var(--category-bg) !important;
+}
+
+/* All headings */
+.category-page h1,
+.category-page h2,
+.category-page h3,
+.category-page h4,
+.category-page h5,
+.category-page h6 {
+  color: var(--category-primary-text) !important;
+}
+
+/* All paragraphs and text */
+.category-page p,
+.category-page span,
+.category-page div {
+  color: var(--category-secondary-text) !important;
+}
+
+/* Secondary/muted text */
+.category-page .category-list-mobile-meta,
+.category-page .category-mobile-date,
+.category-page .category-list-header {
+  color: var(--category-muted-text) !important;
+}
+
+/* Container backgrounds */
+.category-page .category-list-container {
+  background: var(--category-bg) !important;
+  border: 1px solid var(--category-border) !important;
+}
+
+/* Header backgrounds */
+.category-page .category-list-header {
+  background: var(--category-surface) !important;
+  border-bottom: 1px solid var(--category-border) !important;
+}
+
+/* Item borders and hover */
+.category-page .category-list-item {
+  border-bottom: 1px solid var(--category-border) !important;
+}
+
+.category-page .category-list-item:hover {
+  background: var(--category-hover) !important;
+}
+
+/* Force all text elements to inherit theme colors */
+.category-page * {
+  color: inherit;
+}
+
+/* Specific overrides for job titles */
+.category-page .category-list-mobile-content h3 {
+  color: var(--category-primary-text) !important;
+}
+
+/* Organization and date text */
+.category-page .category-list-mobile-meta span,
+.category-page .category-mobile-date span {
+  color: var(--category-muted-text) !important;
+}
+
+/* Icons */
+.category-page .category-list-mobile-meta svg,
+.category-page .category-mobile-date svg {
+  color: var(--category-muted-text) !important;
+}
+
+/* Header section */
+.category-page .category-header-section h1 {
+  color: var(--category-primary-text) !important;
+}
+
+.category-page .category-header-section p {
+  color: var(--category-secondary-text) !important;
+}
+
+/* Back link */
+.category-page .category-back-link {
+  color: var(--category-primary-text) !important;
+}
+
+/* Empty state */
+.category-page .category-empty-state h2 {
+  color: var(--category-secondary-text) !important;
+}
+
+.category-page .category-empty-state p {
+  color: var(--category-muted-text) !important;
+}
+
+/* Posts badge */
+.category-page .category-posts-badge {
+  background: #dcfce7 !important;
+  color: #166534 !important;
+}
+
+/* Ensure proper contrast in dark theme */
+body.dark-theme .category-page .category-posts-badge {
+  background: #065f46 !important;
+  color: #d1fae5 !important;
+}

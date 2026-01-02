@@ -2,11 +2,57 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { jobsAPI } from '../services/api';
 import { FaArrowLeft, FaCalendarAlt, FaBuilding, FaExternalLinkAlt, FaEye } from 'react-icons/fa';
+import '../category-mobile.css';
+import '../category-theme.css';
+import '../category-complete-theme.css';
+
+// Custom hook for responsive design and theme detection
+const useResponsive = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isSmallMobile, setIsSmallMobile] = useState(window.innerWidth <= 480);
+  const [isDarkTheme, setIsDarkTheme] = useState(document.body.classList.contains('dark-theme'));
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsSmallMobile(window.innerWidth <= 480);
+    };
+
+    const handleThemeChange = () => {
+      setIsDarkTheme(document.body.classList.contains('dark-theme'));
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // Listen for theme changes
+    const observer = new MutationObserver(handleThemeChange);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      observer.disconnect();
+    };
+  }, []);
+
+  return { isMobile, isSmallMobile, isDarkTheme };
+};
 
 const CategoryPage = () => {
   const { category } = useParams();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isMobile, isSmallMobile, isDarkTheme } = useResponsive();
+
+  // Simplified theme colors using CSS variables
+  const themeColors = {
+    text: 'var(--category-primary-text)',
+    textMuted: 'var(--category-secondary-text)',
+    textSecondary: 'var(--category-muted-text)',
+    background: 'var(--category-bg)',
+    border: 'var(--category-border)',
+    headerBg: 'var(--category-surface)',
+    hoverBg: 'var(--category-hover)'
+  };
 
   useEffect(() => {
     fetchJobs();
@@ -63,17 +109,18 @@ const CategoryPage = () => {
   if (loading) {
     return (
       <section style={{
-        background: getCategoryBackground(category),
-        color: '#0f172a',
+        background: isDarkTheme ? 'var(--color-surface)' : getCategoryBackground(category),
+        color: themeColors.text,
         padding: '3rem 0',
-        borderBottom: '1px solid rgba(15, 23, 42, 0.05)'
+        borderBottom: `1px solid ${themeColors.border}`
       }}>
         <div className="container" style={{
           minHeight: '280px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '1.125rem'
+          fontSize: '1.125rem',
+          color: themeColors.text
         }}>
           Loading category jobs...
         </div>
@@ -82,19 +129,19 @@ const CategoryPage = () => {
   }
 
   return (
-    <div>
-      <section style={{
-        background: getCategoryBackground(category),
-        color: '#0f172a',
+    <div className="category-page">
+      <section className="category-header-section" style={{
+        background: isDarkTheme ? 'var(--color-surface)' : getCategoryBackground(category),
+        color: themeColors.text,
         padding: '3rem 0',
-        borderBottom: '1px solid rgba(15, 23, 42, 0.05)'
+        borderBottom: `1px solid ${themeColors.border}`
       }}>
         <div className="container">
           <Link to="/" style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.5rem',
-            color: 'var(--color-text)',
+            color: themeColors.text,
             textDecoration: 'none',
             marginBottom: '2rem',
             fontWeight: '600',
@@ -107,14 +154,16 @@ const CategoryPage = () => {
           <h1 style={{
             fontSize: 'clamp(2rem, 6vw, 3rem)',
             fontWeight: 'bold',
-            marginBottom: '1rem'
+            marginBottom: '1rem',
+            color: themeColors.text
           }}>
             {getCategoryTitle(category)}
           </h1>
           
           <p style={{
             fontSize: '1.25rem',
-            opacity: 0.8
+            opacity: 0.9,
+            color: themeColors.textMuted
           }}>
             {jobs.length} {jobs.length === 1 ? 'notification' : 'notifications'} available
           </p>
@@ -131,15 +180,15 @@ const CategoryPage = () => {
             }}>
               <h2 style={{
                 fontSize: '1.5rem',
-                color: 'var(--color-muted)',
+                color: themeColors.textMuted,
                 marginBottom: '1rem'
               }}>
                 No {getCategoryTitle(category).toLowerCase()} available at the moment
               </h2>
               <p style={{
-                color: 'var(--color-muted)',
+                color: themeColors.textMuted,
                 marginBottom: '2rem',
-                opacity: 0.8
+                opacity: 0.9
               }}>
                 Please check back later for updates
               </p>
@@ -149,24 +198,24 @@ const CategoryPage = () => {
             </div>
           ) : (
             <div style={{
-              background: '#ffffff',
+              background: themeColors.background,
               borderRadius: '12px',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+              boxShadow: isDarkTheme ? '0 4px 20px rgba(0, 0, 0, 0.4)' : '0 4px 20px rgba(0, 0, 0, 0.08)',
               overflow: 'hidden',
-              border: '1px solid rgba(0, 0, 0, 0.05)'
+              border: `1px solid ${themeColors.border}`
             }}>
-              {/* List Header */}
+              {/* List Header - Hidden on mobile */}
               <div className="category-list-header" style={{
-                background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+                background: themeColors.headerBg,
                 padding: '1rem 1.5rem',
-                borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-                display: 'grid',
+                borderBottom: `1px solid ${themeColors.border}`,
+                display: isMobile ? 'none' : 'grid',
                 gridTemplateColumns: '1fr auto auto',
                 gap: '1rem',
                 alignItems: 'center',
                 fontWeight: '600',
                 fontSize: '0.9rem',
-                color: '#475569'
+                color: themeColors.textSecondary
               }}>
                 <div>Job Title & Organization</div>
                 <div style={{ textAlign: 'center', minWidth: '120px' }}>Date</div>
@@ -240,29 +289,33 @@ const CategoryPage = () => {
                       key={job._id}
                       className="category-list-item"
                       style={{
-                        padding: '1.25rem 1.5rem',
-                        borderBottom: index < jobs.length - 1 ? '1px solid rgba(0, 0, 0, 0.05)' : 'none',
-                        display: 'grid',
-                        gridTemplateColumns: '1fr auto auto',
+                        padding: isMobile ? '1rem' : '1.25rem 1.5rem',
+                        borderBottom: index < jobs.length - 1 ? `1px solid ${themeColors.border}` : 'none',
+                        display: isMobile ? 'block' : 'grid',
+                        gridTemplateColumns: isMobile ? 'none' : '1fr auto auto',
                         gap: '1rem',
                         alignItems: 'center',
                         transition: 'all 0.2s ease',
                         cursor: 'pointer'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#f8fafc';
+                        e.currentTarget.style.backgroundColor = themeColors.hoverBg;
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = 'transparent';
                       }}
                     >
                       {/* Job Title & Organization */}
-                      <div className="category-list-mobile-content">
+                      <div className="category-list-mobile-content" style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: isMobile ? '0.75rem' : '0.5rem'
+                      }}>
                         <h3 style={{
-                          fontSize: '1.1rem',
+                          fontSize: isSmallMobile ? '1rem' : isMobile ? '1.05rem' : '1.1rem',
                           fontWeight: '600',
-                          marginBottom: '0.5rem',
-                          color: '#1e293b',
+                          marginBottom: isMobile ? '0.25rem' : '0.5rem',
+                          color: themeColors.text,
                           lineHeight: '1.4'
                         }}>
                           {job.title}
@@ -271,79 +324,144 @@ const CategoryPage = () => {
                           display: 'flex',
                           alignItems: 'center',
                           gap: '0.5rem',
-                          color: '#64748b',
-                          fontSize: '0.9rem',
-                          flexWrap: 'wrap'
+                          color: themeColors.textSecondary,
+                          fontSize: isSmallMobile ? '0.8rem' : '0.9rem',
+                          flexWrap: 'wrap',
+                          justifyContent: isMobile ? 'space-between' : 'flex-start'
                         }}>
-                          <FaBuilding size={14} />
-                          <span>{job.organization}</span>
-                          {job.category === 'upcoming-job' && job.posts && (
-                            <span style={{
-                              background: '#dcfce7',
-                              color: '#166534',
-                              padding: '2px 8px',
-                              borderRadius: '12px',
-                              fontSize: '0.8rem',
-                              fontWeight: '500',
-                              marginLeft: '0.5rem'
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            flex: isMobile ? '1' : 'auto'
+                          }}>
+                            <FaBuilding size={14} />
+                            <span>{job.organization}</span>
+                            {job.category === 'upcoming-job' && job.posts && (
+                              <span className="category-posts-badge" style={{
+                                background: '#dcfce7',
+                                color: '#166534',
+                                padding: '2px 8px',
+                                borderRadius: '12px',
+                                fontSize: isSmallMobile ? '0.7rem' : '0.8rem',
+                                fontWeight: '500',
+                                marginLeft: '0.5rem'
+                              }}>
+                                {job.posts} Posts
+                              </span>
+                            )}
+                          </div>
+                          
+                          {/* Mobile: Date and Action in same row */}
+                          {isMobile && (
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              gap: '1rem',
+                              marginTop: '0.5rem',
+                              width: '100%'
                             }}>
-                              {job.posts} Posts
-                            </span>
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                color: themeColors.textSecondary,
+                                fontSize: isSmallMobile ? '0.8rem' : '0.9rem'
+                              }}>
+                                <FaCalendarAlt size={14} />
+                                <span>{formatDate(job.lastDate)}</span>
+                              </div>
+                              
+                              <Link
+                                to={`/job/${job._id}`}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                                  color: '#ffffff',
+                                  padding: isSmallMobile ? '6px 12px' : '8px 16px',
+                                  borderRadius: '8px',
+                                  textDecoration: 'none',
+                                  fontSize: isSmallMobile ? '0.75rem' : '0.85rem',
+                                  fontWeight: '500',
+                                  transition: 'all 0.2s ease',
+                                  whiteSpace: 'nowrap',
+                                  flexShrink: 0
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.target.style.transform = 'translateY(-2px)';
+                                  e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.3)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.target.style.transform = 'translateY(0)';
+                                  e.target.style.boxShadow = 'none';
+                                }}
+                              >
+                                {getActionButton(job.category).text}
+                              </Link>
+                            </div>
                           )}
                         </div>
                       </div>
 
-                      {/* Date */}
-                      <div style={{
-                        textAlign: 'center',
-                        minWidth: '120px'
-                      }}>
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '0.5rem',
-                          color: '#64748b',
-                          fontSize: '0.9rem'
-                        }}>
-                          <FaCalendarAlt size={14} />
-                          <span>{formatDate(job.lastDate)}</span>
-                        </div>
-                      </div>
+                      {/* Desktop: Date and Action Button */}
+                      {!isMobile && (
+                        <>
+                          {/* Date */}
+                          <div style={{
+                            textAlign: 'center',
+                            minWidth: '120px'
+                          }}>
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '0.5rem',
+                              color: themeColors.textSecondary,
+                              fontSize: '0.9rem'
+                            }}>
+                              <FaCalendarAlt size={14} />
+                              <span>{formatDate(job.lastDate)}</span>
+                            </div>
+                          </div>
 
-                      {/* Action Button */}
-                      <div style={{
-                        textAlign: 'center',
-                        minWidth: '100px'
-                      }}>
-                        <Link
-                          to={`/job/${job._id}`}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                            color: '#ffffff',
-                            padding: '8px 16px',
-                            borderRadius: '8px',
-                            textDecoration: 'none',
-                            fontSize: '0.85rem',
-                            fontWeight: '500',
-                            transition: 'all 0.2s ease',
-                            whiteSpace: 'nowrap'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.target.style.transform = 'translateY(-2px)';
-                            e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.3)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.transform = 'translateY(0)';
-                            e.target.style.boxShadow = 'none';
-                          }}
-                        >
-                          {getActionButton(job.category).text}
-                        </Link>
-                      </div>
+                          {/* Action Button */}
+                          <div style={{
+                            textAlign: 'center',
+                            minWidth: '100px'
+                          }}>
+                            <Link
+                              to={`/job/${job._id}`}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                                color: '#ffffff',
+                                padding: '8px 16px',
+                                borderRadius: '8px',
+                                textDecoration: 'none',
+                                fontSize: '0.85rem',
+                                fontWeight: '500',
+                                transition: 'all 0.2s ease',
+                                whiteSpace: 'nowrap'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.target.style.transform = 'translateY(-2px)';
+                                e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.3)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.target.style.transform = 'translateY(0)';
+                                e.target.style.boxShadow = 'none';
+                              }}
+                            >
+                              {getActionButton(job.category).text}
+                            </Link>
+                          </div>
+                        </>
+                      )}
                     </div>
                   );
                 })}
