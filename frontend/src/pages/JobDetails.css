@@ -573,3 +573,35 @@ body.dark-theme .job-details-container .important-links {
     font-size: 0.9rem !important;
   }
 }
+/* JobDetails Light Mode Text Visibility Fixes */
+body:not(.dark-theme) {
+  --job-text-strong: #0f172a !important;
+  --job-text-muted: #374151 !important;
+}
+
+/* Force proper text colors in light mode */
+body:not(.dark-theme) .job-details-card,
+body:not(.dark-theme) .job-details-card *,
+body:not(.dark-theme) .job-apply-card__body,
+body:not(.dark-theme) .job-apply-card__body *,
+body:not(.dark-theme) .job-section__text,
+body:not(.dark-theme) .job-additional__item p {
+  color: #374151 !important;
+}
+
+body:not(.dark-theme) .job-details-card h3,
+body:not(.dark-theme) .job-details-card h4,
+body:not(.dark-theme) .job-apply-card__list strong,
+body:not(.dark-theme) .job-details__metric {
+  color: #0f172a !important;
+}
+
+/* Loading and empty states */
+body:not(.dark-theme) .job-details__loading,
+body:not(.dark-theme) .job-details__empty h2 {
+  color: #0f172a !important;
+}
+
+/* Hero section already has white text on colored background - keep as is */
+
+/* Important links section - keep dark styling as intended */
