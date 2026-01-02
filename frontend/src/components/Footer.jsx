@@ -12,6 +12,10 @@ const Footer = () => {
               <p className="brand-description">
                 Your trusted source for government job notifications, results, and admit cards. 
                 Stay updated with the latest opportunities in the public sector.
+                <br /><br />
+                This website is not a government website.
+                We provide job information collected from official sources.
+                Always verify from official website before applying.
               </p>
             </div>
           </div>
