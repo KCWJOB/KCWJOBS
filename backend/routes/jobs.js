@@ -41,12 +41,14 @@ router.post('/', auth, async (req, res) => {
   try {
     const jobData = { ...req.body };
     
-    // Validate required fields
+    // Basic validation - only fields with asterisks in frontend
     if (!jobData.title || !jobData.organization || !jobData.category || 
-        !jobData.description || !jobData.lastDate || !jobData.applicationFee || 
-        !jobData.applyLink || !jobData.eligibility) {
-      return res.status(400).json({ message: 'Missing required fields' });
+        !jobData.lastDate || !jobData.applyLink) {
+      return res.status(400).json({ message: 'Missing required fields: Title, Organization, Category, Last Date, and Apply Link are required.' });
     }
+    
+    // No additional validation for description, eligibility, applicationFee - they are optional now
+    // No validation for startDate, salary, posts - they are optional now
     
     // Clear job-specific fields for result and admit-card categories
     if (jobData.category === 'result' || jobData.category === 'admit-card') {
