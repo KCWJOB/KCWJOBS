@@ -487,3 +487,181 @@
     font-size: 0.75rem !important;
   }
 }
+
+/* Enhanced Category Page Mobile Layout Fixes */
+@media (max-width: 768px) {
+  /* Category page section padding */
+  .category-page-section {
+    padding: 1.5rem 0 !important;
+  }
+  
+  .category-page-container {
+    padding: 0 1rem !important;
+  }
+  
+  /* Category list container mobile styling */
+  .category-list-container {
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  /* Enhanced mobile list items */
+  .category-list-item {
+    padding: 1rem !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    display: block !important;
+    transition: background-color 0.2s ease !important;
+  }
+  
+  .category-list-item:hover {
+    background-color: #f8fafc !important;
+  }
+  
+  .category-list-item:last-child {
+    border-bottom: none !important;
+  }
+  
+  /* Mobile content structure improvements */
+  .category-list-mobile-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+  
+  .category-list-mobile-content h3 {
+    font-size: 1.05rem !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    color: #1e293b !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+  
+  /* Mobile meta layout improvements */
+  .category-list-mobile-meta {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+  }
+  
+  .category-list-mobile-meta > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    color: #64748b !important;
+    font-size: 0.9rem !important;
+  }
+  
+  /* Mobile action row styling */
+  .category-mobile-action-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+  
+  .category-mobile-date {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    color: #64748b !important;
+    font-size: 0.85rem !important;
+    flex: 1 !important;
+  }
+  
+  .category-mobile-button {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .category-mobile-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3) !important;
+  }
+  
+  /* Posts badge mobile styling */
+  .category-posts-badge {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+    padding: 2px 8px !important;
+    border-radius: 12px !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    margin-left: 0.5rem !important;
+  }
+}
+
+/* Extra small mobile screens for category pages */
+@media (max-width: 480px) {
+  .category-list-mobile-content h3 {
+    font-size: 1rem !important;
+  }
+  
+  .category-mobile-date {
+    font-size: 0.8rem !important;
+  }
+  
+  .category-mobile-button {
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+  }
+  
+  .category-posts-badge {
+    font-size: 0.7rem !important;
+  }
+  
+  .category-list-item {
+    padding: 0.75rem !important;
+  }
+  
+  .category-mobile-action-row {
+    gap: 0.75rem !important;
+  }
+}
+
+/* Category page header mobile improvements */
+@media (max-width: 768px) {
+  .category-header {
+    padding: 2rem 0 !important;
+    text-align: center !important;
+  }
+  
+  .category-header h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .category-header p {
+    font-size: 1rem !important;
+    opacity: 0.9 !important;
+  }
+  
+  .category-back-button {
+    font-size: 0.9rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .category-header h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .category-header p {
+    font-size: 0.9rem !important;
+  }
+}

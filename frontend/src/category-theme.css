@@ -1,0 +1,210 @@
+/* Category Page Theme-Aware Styles */
+
+/* Light Theme Colors */
+body:not(.dark-theme) .category-page {
+  --category-bg: #ffffff;
+  --category-text: #0f172a;
+  --category-text-muted: #374151;
+  --category-text-secondary: #64748b;
+  --category-border: rgba(0, 0, 0, 0.05);
+  --category-header-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  --category-hover-bg: #f8fafc;
+  --category-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Dark Theme Colors */
+body.dark-theme .category-page {
+  --category-bg: #1e293b;
+  --category-text: #ffffff;
+  --category-text-muted: #d1d5db;
+  --category-text-secondary: #9ca3af;
+  --category-border: rgba(255, 255, 255, 0.1);
+  --category-header-bg: rgba(15, 23, 42, 0.8);
+  --category-hover-bg: rgba(255, 255, 255, 0.05);
+  --category-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Category List Container */
+.category-list-container {
+  background: var(--category-bg) !important;
+  border: 1px solid var(--category-border) !important;
+  box-shadow: var(--category-shadow) !important;
+}
+
+/* Category List Header */
+.category-list-header {
+  background: var(--category-header-bg) !important;
+  border-bottom: 1px solid var(--category-border) !important;
+  color: var(--category-text-secondary) !important;
+}
+
+/* Category List Items */
+.category-list-item {
+  border-bottom: 1px solid var(--category-border) !important;
+  color: var(--category-text) !important;
+}
+
+.category-list-item:hover {
+  background-color: var(--category-hover-bg) !important;
+}
+
+/* Category Text Elements */
+.category-list-mobile-content h3 {
+  color: var(--category-text) !important;
+}
+
+.category-list-mobile-meta {
+  color: var(--category-text-secondary) !important;
+}
+
+.category-mobile-date {
+  color: var(--category-text-secondary) !important;
+}
+
+/* Category Header Section */
+.category-header-section {
+  color: var(--category-text) !important;
+}
+
+.category-header-section h1 {
+  color: var(--category-text) !important;
+}
+
+.category-header-section p {
+  color: var(--category-text-muted) !important;
+}
+
+.category-back-link {
+  color: var(--category-text) !important;
+}
+
+/* Empty State */
+.category-empty-state h2 {
+  color: var(--category-text-muted) !important;
+}
+
+.category-empty-state p {
+  color: var(--category-text-muted) !important;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  body:not(.dark-theme) .category-page {
+    --category-text: #000000;
+    --category-text-muted: #1a1a1a;
+    --category-text-secondary: #333333;
+    --category-border: rgba(0, 0, 0, 0.2);
+  }
+  
+  body.dark-theme .category-page {
+    --category-text: #ffffff;
+    --category-text-muted: #f0f0f0;
+    --category-text-secondary: #cccccc;
+    --category-border: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* Force high contrast for all text elements */
+body:not(.dark-theme) .category-list-item,
+body:not(.dark-theme) .category-list-item h3,
+body:not(.dark-theme) .category-list-item span,
+body:not(.dark-theme) .category-list-item div {
+  color: #0f172a !important;
+}
+
+body:not(.dark-theme) .category-list-mobile-meta,
+body:not(.dark-theme) .category-mobile-date {
+  color: #374151 !important;
+}
+
+body.dark-theme .category-list-item,
+body.dark-theme .category-list-item h3,
+body.dark-theme .category-list-item span,
+body.dark-theme .category-list-item div {
+  color: #ffffff !important;
+}
+
+body.dark-theme .category-list-mobile-meta,
+body.dark-theme .category-mobile-date {
+  color: #d1d5db !important;
+}
+
+/* Ensure visibility in both themes */
+.category-list-container {
+  color: inherit !important;
+}
+
+.category-list-item * {
+  color: inherit !important;
+}
+
+/* Override any conflicting styles */
+body .category-list-mobile-content h3 {
+  color: var(--category-text) !important;
+}
+
+body .category-list-mobile-meta {
+  color: var(--category-text-secondary) !important;
+}
+
+body .category-mobile-date {
+  color: var(--category-text-secondary) !important;
+}
+/* Critical Dark Theme Text Visibility Fixes */
+body.dark-theme .category-page * {
+  color: inherit !important;
+}
+
+/* Force high contrast for subtitles and secondary text in dark theme */
+body.dark-theme .category-list-mobile-meta,
+body.dark-theme .category-list-mobile-meta *,
+body.dark-theme .category-mobile-date,
+body.dark-theme .category-mobile-date * {
+  color: #d1d5db !important;
+  opacity: 1 !important;
+}
+
+/* Organization names and building icons */
+body.dark-theme .category-list-mobile-meta span,
+body.dark-theme .category-list-mobile-meta svg {
+  color: #d1d5db !important;
+}
+
+/* Date elements */
+body.dark-theme .category-mobile-date span,
+body.dark-theme .category-mobile-date svg {
+  color: #d1d5db !important;
+}
+
+/* Header section subtitles */
+body.dark-theme .category-header-section p {
+  color: #d1d5db !important;
+  opacity: 0.9 !important;
+}
+
+/* List header text */
+body.dark-theme .category-list-header,
+body.dark-theme .category-list-header * {
+  color: #9ca3af !important;
+}
+
+/* Desktop date columns */
+body.dark-theme .category-list-item > div:nth-child(2),
+body.dark-theme .category-list-item > div:nth-child(2) * {
+  color: #d1d5db !important;
+}
+
+/* Ensure all secondary text is visible */
+body.dark-theme .category-page .category-list-mobile-meta,
+body.dark-theme .category-page .category-mobile-date {
+  color: #d1d5db !important;
+}
+
+/* Override any opacity that might hide text */
+body.dark-theme .category-page * {
+  opacity: 1 !important;
+}
+
+body.dark-theme .category-page p {
+  opacity: 0.9 !important;
+}
