@@ -65,19 +65,20 @@ body.dark-theme {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--job-highlight);
+  color: #ffffff !important;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
-  background: rgba(59, 130, 246, 0.08);
+  background: var(--job-highlight);
   box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 body.dark-theme .job-details__back-link {
-  background: rgba(52, 211, 153, 0.18);
+   background: var(--job-highlight);
+  color: #ffffff !important;
   box-shadow: 0 18px 35px rgba(2, 6, 23, 0.35);
 }
 

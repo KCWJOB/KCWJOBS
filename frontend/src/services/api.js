@@ -24,8 +24,15 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      // Clear all admin session data on unauthorized
       localStorage.removeItem('adminToken');
-      window.location.href = '/admin/login';
+      localStorage.removeItem('adminUser');
+      localStorage.removeItem('adminTokenExpiry');
+      
+      // Only redirect if not already on login page
+      if (!window.location.pathname.includes('/admin/login')) {
+        window.location.href = '/admin/login';
+      }
     }
     return Promise.reject(error);
   }
@@ -33,6 +40,8 @@ api.interceptors.response.use(
 
 export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
+  logout: () => api.post('/auth/logout'),
+  verifyToken: () => api.get('/auth/verify'),
   createAdmin: (adminData) => api.post('/auth/create-admin', adminData),
 };
 

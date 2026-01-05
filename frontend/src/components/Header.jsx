@@ -9,14 +9,35 @@ const Header = () => {
   const isAdminPage = location.pathname.includes('/admin');
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
+    if (isAdminPage) {
+      // Force dark theme for admin pages
       setIsDarkTheme(true);
       document.body.classList.add('dark-theme');
+    } else {
+      // Normal theme logic for non-admin pages
+      const savedTheme = localStorage.getItem('theme');
+      const shouldBeDark = savedTheme === 'dark';
+      setIsDarkTheme(shouldBeDark);
+      
+      if (shouldBeDark) {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
+      
+      // Force re-render of CSS variables
+      document.body.style.display = 'none';
+      document.body.offsetHeight; // Trigger reflow
+      document.body.style.display = '';
     }
-  }, []);
+  }, [isAdminPage, location.pathname]);
 
   const toggleTheme = () => {
+    // Disable theme toggle for admin pages
+    if (isAdminPage) {
+      return;
+    }
+    
     const newTheme = !isDarkTheme;
     setIsDarkTheme(newTheme);
     
@@ -168,7 +189,8 @@ const Header = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
-            gap: 'clamp(0.5rem, 2vw, 1rem)'
+            gap: 'clamp(0.5rem, 2vw, 1rem)',
+            width: '100%'
           }}>
             <Link 
               to="/" 
@@ -204,8 +226,7 @@ const Header = () => {
               gap: 'clamp(0.1rem, 1vw, 0.25rem)',
               alignItems: 'center',
               flexWrap: 'wrap',
-              justifyContent: 'flex-end',
-              flex: 1
+              justifyContent: 'flex-end'
             }}>
               <Link
                 to="/"
@@ -285,21 +306,23 @@ const Header = () => {
                 Admission
               </Link>
               
-              <button
-                onClick={toggleTheme}
-                style={{
-                  ...navLinkStyle,
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-                onMouseEnter={(event) => handleHover(event, true)}
-                onMouseLeave={(event) => handleHover(event, false)}
-                title={isDarkTheme ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
-              >
-                {isDarkTheme ? <FaSun size={16} /> : <FaMoon size={16} />}
-                {isDarkTheme ? 'Light' : 'Dark'}
-              </button>
+              {!isAdminPage && (
+                <button
+                  onClick={toggleTheme}
+                  style={{
+                    ...navLinkStyle,
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(event) => handleHover(event, true)}
+                  onMouseLeave={(event) => handleHover(event, false)}
+                  title={isDarkTheme ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+                >
+                  {isDarkTheme ? <FaSun size={16} /> : <FaMoon size={16} />}
+                  {isDarkTheme ? 'Light' : 'Dark'}
+                </button>
+              )}
             </nav>
           </div>
         </div>

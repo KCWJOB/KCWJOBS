@@ -117,6 +117,20 @@ body.dark-theme {
   background-size: 400% 400%;
   animation: themeGradient 20s ease infinite;
   color: #ffffff;
+  --color-bg: #0f172a;
+  --color-bg-strong: #1e293b;
+  --color-bg-warm: #1f2937;
+  --color-surface: #1e293b;
+  --color-surface-muted: #334155;
+  --color-text: #ffffff;
+  --color-muted: #cbd5e1;
+  --color-primary: #3b82f6;
+  --color-primary-strong: #2563eb;
+  --color-accent: #f97316;
+  --color-accent-strong: #ea580c;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.3);
+  --shadow-strong: 0 30px 60px rgba(0, 0, 0, 0.5);
   --header-bg: rgba(4, 7, 20, 0.92);
   --header-text: #f8fafc;
   --header-border: rgba(148, 163, 184, 0.3);
@@ -449,18 +463,82 @@ body.dark-theme .card-rich a {
   box-shadow: 0 2px 6px rgba(2, 6, 23, 0.45);
 }
 
-/* Responsive tweaks */
-@media (max-width: 640px) {
-  :root { --status-card-header-height: clamp(70px, 12vw, 88px); }
-  .status-card__icon { width: 36px; height: 36px; }
-  .status-card__count { height: 32px; min-width: 32px; font-size: 0.85rem; }
-  .status-card__title p { 
-    -webkit-line-clamp: 2; 
-    font-size: clamp(1rem, 3vw, 1.25rem) !important;
+/* Mobile Header Height Reduction - High Priority */
+@media (max-width: 768px) {
+  .status-card .status-card__header {
+    height: 45px !important;
+    min-height: 45px !important;
+    max-height: 45px !important;
+    padding: 0.5rem !important;
+  }
+  
+  .status-card__title {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+  
+  .status-card__title p {
+    font-size: 0.9rem !important;
     line-height: 1.2 !important;
+    margin: 0 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .status-card .status-card__header {
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    padding: 0.4rem !important;
+  }
+  
+  .status-card__icon { 
+    width: 28px !important; 
+    height: 28px !important; 
+  }
+  
+  .status-card__count { 
+    height: 24px !important; 
+    min-width: 24px !important; 
+    font-size: 0.75rem !important; 
+  }
+  
+  .status-card__title p { 
+    font-size: 0.85rem !important;
+    line-height: 1.1 !important;
+    -webkit-line-clamp: 1 !important;
+  }
+  
+  .status-card__subtitle {
+    display: none !important;
+  }
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .status-card__header {
+    height: 45px !important;
+    min-height: 45px !important;
+    padding: 0.5rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  :root { --status-card-header-height: 40px; }
+  .status-card__header {
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0.4rem !important;
+  }
+  .status-card__icon { width: 28px; height: 28px; }
+  .status-card__count { height: 24px; min-width: 24px; font-size: 0.75rem; }
+  .status-card__title p { 
+    -webkit-line-clamp: 1; 
+    font-size: 0.85rem !important;
+    line-height: 1.1 !important;
   }
   .status-card__subtitle {
-    font-size: clamp(0.8rem, 2.5vw, 0.9rem) !important;
+    display: none !important;
   }
 }
 
@@ -624,11 +702,34 @@ body.dark-theme .card-rich a {
   font-weight: 600;
   font-size: var(--font-size-sm);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 0.5rem;
   min-height: clamp(50px, 7vw, 64px);
   transition: box-shadow var(--transition-speed);
+  text-align: center;
+  padding-top: 0.50rem;
+}
+
+/* Mobile CTA Footer Reduction */
+@media (max-width: 768px) {
+  .status-card__cta {
+    height: 35px !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+    padding: 0.5rem !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .status-card__cta {
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    padding: 0.4rem !important;
+    font-size: 0.75rem !important;
+  }
 }
 
 .status-card__cta:hover {
@@ -1173,10 +1274,11 @@ body.dark-theme .card-rich a {
 
 /* Additional Mobile Fixes for Status Cards */
 @media (max-width: 768px) {
-  .status-card__header {
-    padding: 1rem !important;
-    height: auto !important;
-    min-height: 80px !important;
+  .status-card .status-card__header {
+    height: 45px !important;
+    min-height: 45px !important;
+    max-height: 45px !important;
+    padding: 0.5rem !important;
     flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -1188,9 +1290,9 @@ body.dark-theme .card-rich a {
   }
   
   .status-card__title p {
-    font-size: 1.1rem !important;
+    font-size: 0.9rem !important;
     font-weight: 700 !important;
-    line-height: 1.3 !important;
+    line-height: 1.2 !important;
     margin: 0 !important;
     display: block !important;
     white-space: normal !important;
@@ -1199,13 +1301,7 @@ body.dark-theme .card-rich a {
   }
   
   .status-card__subtitle {
-    font-size: 0.85rem !important;
-    opacity: 0.9 !important;
-    margin-top: 2px !important;
-    display: block !important;
-    white-space: normal !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
+    display: none !important;
   }
   
   .status-card__count {
@@ -1215,28 +1311,26 @@ body.dark-theme .card-rich a {
 }
 
 @media (max-width: 480px) {
-  .status-card__header {
-    padding: 0.75rem !important;
-    min-height: 70px !important;
+  .status-card .status-card__header {
+    padding: 0.4rem !important;
+    min-height: 40px !important;
+    height: 40px !important;
+    max-height: 40px !important;
   }
   
   .status-card__title p {
-    font-size: 1rem !important;
-  }
-  
-  .status-card__subtitle {
-    font-size: 0.8rem !important;
+    font-size: 0.85rem !important;
   }
   
   .status-card__icon {
-    width: 32px !important;
-    height: 32px !important;
+    width: 28px !important;
+    height: 28px !important;
   }
   
   .status-card__count {
-    height: 28px !important;
-    min-width: 28px !important;
-    font-size: 0.8rem !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    font-size: 0.75rem !important;
   }
 }
 
@@ -1250,13 +1344,21 @@ body.dark-theme .card-rich a {
   }
 }
 
-/* Force black color for Back to Home button in all themes */
-.category-page a[href="/"] {
+/* Category Page Back to Home Button - Theme Aware */
+body:not(.dark-theme) .category-page a[href="/"] {
   color: #000000 !important;
 }
 
-.category-page a[href="/"] * {
+body:not(.dark-theme) .category-page a[href="/"] * {
   color: #000000 !important;
+}
+
+body.dark-theme .category-page a[href="/"] {
+  color: #ffffff !important;
+}
+
+body.dark-theme .category-page a[href="/"] * {
+  color: #ffffff !important;
 }
 
 /* Privacy Policy and Disclaimer - Force white text in both themes */
@@ -1376,6 +1478,27 @@ body .bg-yellow-100 p {
   transition: all 0.2s ease !important;
   border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
+
+/* Mobile Footer CTA Reduction */
+@media (max-width: 768px) {
+  .status-card__cta {
+    height: 35px !important;
+    min-height: 35px !important;
+    max-height: 35px !important;
+    font-size: 0.8rem !important;
+    padding: 0.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .status-card__cta {
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    font-size: 0.75rem !important;
+    padding: 0.4rem !important;
+  }
+}
 /* Equal Height Cards System */
 .status-card {
   height: 500px !important;
@@ -1384,6 +1507,18 @@ body .bg-yellow-100 p {
   display: flex !important;
   flex-direction: column !important;
   justify-self: center !important;
+}
+
+/* Desktop Body Height Increase */
+@media (min-width: 769px) {
+  .status-card {
+    height: 600px !important;
+  }
+  
+  .status-card__body {
+    flex: 1 !important;
+    min-height: 480px !important;
+  }
 }
 
 .status-card__header {

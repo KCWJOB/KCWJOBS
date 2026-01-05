@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { jobsAPI, youtubeAPI } from '../services/api';
+import { jobsAPI, youtubeAPI, authAPI } from '../services/api';
+import { sessionManager } from '../utils/sessionManager';
 import { FaPlus, FaEdit, FaTrash, FaSignOutAlt, FaEye, FaTimes, FaExclamationTriangle, FaClock, FaCheck, FaYoutube } from 'react-icons/fa';
 import { CATEGORY_SECTION_CONFIG, ensureSectionDefaults } from '../constants/categorySections';
 
@@ -43,14 +44,24 @@ const AdminDashboard = () => {
   // Theme detection removed - always dark theme
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
+    // Check authentication
+    if (!sessionManager.isAuthenticated()) {
       navigate('/admin/login');
       return;
     }
+    
     fetchJobs();
     fetchDeletionNotifications();
     fetchYouTubeData();
+    
+    // Set up session check interval (every 5 minutes)
+    const sessionInterval = setInterval(() => {
+      if (!sessionManager.isAuthenticated()) {
+        navigate('/admin/login');
+      }
+    }, 5 * 60 * 1000);
+    
+    return () => clearInterval(sessionInterval);
   }, [navigate]);
 
   useEffect(() => {
@@ -148,8 +159,12 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminUser');
+    // Clear session using sessionManager
+    sessionManager.clearSession();
+    
+    // Optional: Call logout API to invalidate token on server
+    authAPI.logout().catch(() => {});
+    
     navigate('/admin/login');
   };
 

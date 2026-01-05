@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import { sessionManager } from '../utils/sessionManager';
 import { FaUser, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const AdminLogin = () => {
@@ -11,7 +12,32 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isDarkTheme, setIsDarkTheme] = useState(true);
   const navigate = useNavigate();
+
+  // Theme synchronization - Force dark theme for admin login
+  useEffect(() => {
+    // Check if already logged in
+    if (sessionManager.isAuthenticated()) {
+      navigate('/admin/dashboard');
+      return;
+    }
+
+    // Always use dark theme for admin login
+    setIsDarkTheme(true);
+    
+    // Apply dark theme to body for this page
+    document.body.classList.add('dark-theme');
+    
+    // Cleanup when component unmounts
+    return () => {
+      // Restore original theme when leaving admin login
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme !== 'dark') {
+        document.body.classList.remove('dark-theme');
+      }
+    };
+  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({
@@ -28,8 +54,14 @@ const AdminLogin = () => {
 
     try {
       const response = await authAPI.login(formData);
-      localStorage.setItem('adminToken', response.data.token);
-      localStorage.setItem('adminUser', JSON.stringify(response.data.admin));
+      const { token, admin, expiresIn } = response.data;
+      
+      // Store token with expiration
+      const expirationTime = Date.now() + (expiresIn * 1000); // Convert to milliseconds
+      localStorage.setItem('adminToken', token);
+      localStorage.setItem('adminUser', JSON.stringify(admin));
+      localStorage.setItem('adminTokenExpiry', expirationTime.toString());
+      
       navigate('/admin/dashboard');
     } catch (error) {
       setError(error.response?.data?.message || 'Login failed');
@@ -40,34 +72,35 @@ const AdminLogin = () => {
 
   return (
     <div style={{
-      minHeight: '80vh',
+      minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-strong) 60%, var(--color-bg-warm) 100%)',
-      padding: '1rem'
+      background: 'var(--color-bg)',
+      padding: 'var(--spacing-md)'
     }}>
       <div style={{
         background: 'var(--color-surface)',
-        borderRadius: '16px',
-        padding: 'clamp(1.5rem, 4vw, 3rem)',
+        borderRadius: 'clamp(12px, 2vw, 20px)',
+        padding: 'var(--spacing-lg)',
         boxShadow: 'var(--shadow-soft)',
+        border: '1px solid var(--color-border)',
         width: '100%',
-        maxWidth: '400px',
+        maxWidth: '420px',
         margin: '0 auto'
       }}>
-        <div style={{ textAlign: 'center', marginBottom: 'clamp(1rem, 3vw, 2rem)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
           <h1 style={{
-            fontSize: 'clamp(1.5rem, 4vw, 2rem)',
-            fontWeight: 'bold',
-            color: 'var(--color-text)',
-            marginBottom: '0.5rem'
+            fontSize: 'var(--font-size-2xl)',
+            fontWeight: '700',
+            color: isDarkTheme ? '#ffffff' : '#000000',
+            marginBottom: 'var(--spacing-xs)'
           }}>
             Admin Login
           </h1>
           <p style={{ 
-            color: 'var(--color-muted)',
-            fontSize: 'clamp(0.875rem, 2.5vw, 1rem)'
+            color: isDarkTheme ? '#cbd5e1' : '#000000',
+            fontSize: 'var(--font-size-sm)'
           }}>
             Access the admin dashboard
           </p>
@@ -75,80 +108,71 @@ const AdminLogin = () => {
 
         {error && (
           <div style={{
-            background: '#fee2e2',
-            color: '#dc2626',
-            padding: 'clamp(0.5rem, 2vw, 0.75rem)',
-            borderRadius: '6px',
-            marginBottom: 'clamp(1rem, 3vw, 1.5rem)',
+            background: isDarkTheme ? '#7f1d1d' : '#fee2e2',
+            color: isDarkTheme ? '#fecaca' : '#dc2626',
+            padding: 'var(--spacing-sm)',
+            borderRadius: '8px',
+            marginBottom: 'var(--spacing-md)',
             textAlign: 'center',
-            fontSize: 'clamp(0.75rem, 2vw, 0.875rem)'
+            fontSize: 'var(--font-size-sm)',
+            border: isDarkTheme ? '1px solid #991b1b' : '1px solid #fecaca'
           }}>
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 'clamp(1rem, 3vw, 1.5rem)' }}>
+          <div style={{ marginBottom: 'var(--spacing-md)' }}>
             <label style={{
               display: 'block',
-              marginBottom: '0.5rem',
-              fontWeight: '500',
-              color: 'var(--color-text)',
-              fontSize: 'clamp(0.875rem, 2.5vw, 1rem)'
+              marginBottom: 'var(--spacing-xs)',
+              fontWeight: '600',
+              color: isDarkTheme ? '#ffffff' : '#000000',
+              fontSize: 'var(--font-size-sm)'
             }}>
               Username
             </label>
-            <div style={{ position: 'relative' }}>
-              <FaUser style={{
-                position: 'absolute',
-                left: 'clamp(8px, 2vw, 12px)',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: '#9ca3af',
-                fontSize: 'clamp(0.875rem, 2vw, 1rem)'
-              }} />
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                autoComplete="username"
-                required
-                style={{
-                  width: '100%',
-                  padding: 'clamp(10px, 2.5vw, 12px) clamp(10px, 2.5vw, 12px) clamp(10px, 2.5vw, 12px) clamp(32px, 8vw, 40px)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '10px',
-                  fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
-                  outline: 'none',
-                  transition: 'border-color 0.3s ease',
-                  boxSizing: 'border-box'
-                }}
-                onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
-                onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
-              />
-            </div>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              autoComplete="username"
+              required
+              style={{
+                width: '100%',
+                padding: 'var(--spacing-sm)',
+                border: '1px solid var(--color-border)',
+                borderRadius: '8px',
+                fontSize: 'var(--font-size-base)',
+                outline: 'none',
+                transition: 'border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease',
+                boxSizing: 'border-box',
+                background: 'var(--color-surface)',
+                color: isDarkTheme ? '#ffffff' : '#000000'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'var(--color-primary)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--color-border)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
           </div>
 
-          <div style={{ marginBottom: 'clamp(1.5rem, 4vw, 2rem)' }}>
+          <div style={{ marginBottom: 'var(--spacing-lg)' }}>
             <label style={{
               display: 'block',
-              marginBottom: '0.5rem',
-              fontWeight: '500',
-              color: 'var(--color-text)',
-              fontSize: 'clamp(0.875rem, 2.5vw, 1rem)'
+              marginBottom: 'var(--spacing-xs)',
+              fontWeight: '600',
+              color: isDarkTheme ? '#ffffff' : '#000000',
+              fontSize: 'var(--font-size-sm)'
             }}>
               Password
             </label>
             <div style={{ position: 'relative' }}>
-              <FaLock style={{
-                position: 'absolute',
-                left: 'clamp(8px, 2vw, 12px)',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: '#9ca3af',
-                fontSize: 'clamp(0.875rem, 2vw, 1rem)'
-              }} />
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
@@ -158,32 +182,45 @@ const AdminLogin = () => {
                 required
                 style={{
                   width: '100%',
-                  padding: 'clamp(10px, 2.5vw, 12px) clamp(32px, 8vw, 40px) clamp(10px, 2.5vw, 12px) clamp(32px, 8vw, 40px)',
+                  padding: 'var(--spacing-sm)',
+                  paddingRight: 'clamp(40px, 10vw, 48px)',
                   border: '1px solid var(--color-border)',
-                  borderRadius: '10px',
-                  fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+                  borderRadius: '8px',
+                  fontSize: 'var(--font-size-base)',
                   outline: 'none',
-                  transition: 'border-color 0.3s ease',
-                  boxSizing: 'border-box'
+                  transition: 'border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease',
+                  boxSizing: 'border-box',
+                  background: 'var(--color-surface)',
+                  color: isDarkTheme ? '#ffffff' : '#000000'
                 }}
-                onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
-                onBlur={(e) => e.target.style.borderColor = 'var(--color-border)'}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'var(--color-primary)';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'var(--color-border)';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 style={{
                   position: 'absolute',
-                  right: 'clamp(8px, 2vw, 12px)',
+                  right: 'var(--spacing-sm)',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'none',
                   border: 'none',
-                  color: '#9ca3af',
+                  color: 'var(--color-muted)',
                   cursor: 'pointer',
-                  fontSize: 'clamp(0.875rem, 2vw, 1rem)',
-                  padding: '4px'
+                  fontSize: 'var(--font-size-sm)',
+                  padding: '4px',
+                  borderRadius: '4px',
+                  transition: 'color var(--transition-speed) ease'
                 }}
+                onMouseEnter={(e) => e.target.style.color = 'var(--color-text)'}
+                onMouseLeave={(e) => e.target.style.color = 'var(--color-muted)'}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -196,10 +233,12 @@ const AdminLogin = () => {
             className="btn btn-primary"
             style={{
               width: '100%',
-              padding: 'clamp(10px, 2.5vw, 12px)',
-              fontSize: 'clamp(0.875rem, 2.5vw, 1rem)',
+              padding: 'var(--spacing-sm)',
+              fontSize: 'var(--font-size-base)',
               fontWeight: '600',
-              minHeight: 'clamp(44px, 10vw, 48px)'
+              minHeight: 'clamp(44px, 8vw, 52px)',
+              borderRadius: '8px',
+              transition: 'all var(--transition-speed) ease'
             }}
           >
             {loading ? 'Logging in...' : 'Login'}

@@ -10,16 +10,33 @@ import '../category-complete-theme.css';
 const useResponsive = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isSmallMobile, setIsSmallMobile] = useState(window.innerWidth <= 480);
-  const [isDarkTheme, setIsDarkTheme] = useState(document.body.classList.contains('dark-theme'));
+  const [isDarkTheme, setIsDarkTheme] = useState(() => {
+    // Check localStorage first, then body class
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme === 'dark' || document.body.classList.contains('dark-theme');
+  });
 
   useEffect(() => {
+    // Apply theme on component mount
+    const savedTheme = localStorage.getItem('theme');
+    const shouldBeDark = savedTheme === 'dark';
+    
+    if (shouldBeDark) {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+    
+    setIsDarkTheme(shouldBeDark);
+    
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
       setIsSmallMobile(window.innerWidth <= 480);
     };
 
     const handleThemeChange = () => {
-      setIsDarkTheme(document.body.classList.contains('dark-theme'));
+      const newTheme = document.body.classList.contains('dark-theme');
+      setIsDarkTheme(newTheme);
     };
 
     window.addEventListener('resize', handleResize);
@@ -141,7 +158,7 @@ const CategoryPage = () => {
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.5rem',
-            color: '#000000',
+            color: isDarkTheme ? '#ffffff' : '#000000',
             textDecoration: 'none',
             marginBottom: '2rem',
             fontWeight: '600',

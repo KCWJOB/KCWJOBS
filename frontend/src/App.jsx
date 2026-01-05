@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -10,6 +10,36 @@ import CategoryPage from './pages/CategoryPage';
 import Contact from './pages/Contact';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Disclaimer from './pages/Disclaimer';
+
+// Theme manager component
+const ThemeManager = () => {
+  const location = useLocation();
+  const isAdminPage = location.pathname.includes('/admin');
+  
+  useEffect(() => {
+    if (isAdminPage) {
+      // Force dark theme for admin pages
+      document.body.classList.add('dark-theme');
+    } else {
+      // Apply saved theme for non-admin pages
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+      } else {
+        document.body.classList.remove('dark-theme');
+      }
+    }
+    
+    // Force CSS variables to update
+    setTimeout(() => {
+      document.body.style.visibility = 'hidden';
+      document.body.offsetHeight; // Trigger reflow
+      document.body.style.visibility = 'visible';
+    }, 0);
+  }, [isAdminPage, location.pathname]);
+  
+  return null;
+};
 
 function App() {
   const hostname = window.location.hostname;
@@ -28,6 +58,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
+        <ThemeManager />
         {/* Always show header except on admin login page */}
         <Header />
         
